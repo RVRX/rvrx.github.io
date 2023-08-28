@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="icloud custom email domain, thunderbird, outlook, Spark, custom">
+    <meta name="description" content="How to add iCloud custom email domain to third party email client like Thunderbird">
+
+  <title>Using 3rd Party Email Client with iCloud+ Custom Domain | RVRX Blog</title>
+
+  <link href="/sidebar.css" rel="stylesheet">
+  <link href="/post.css" rel="stylesheet">
+  <link href="/prismjs/prism.css" rel="stylesheet">
+  <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
+</head>
+<body>
+<div id="sidebar">
+  <div id="sticky-sidebar">
+      <a href="/">
+          <h1>RVRX</h1>
+          <h2>Cole Manning</h2>
+      </a>
+    <nav>
+      <div>
+        <p><a href="/blog" class="current-page">blog</a></p>
+        <p><a href="/work.html">work</a></p>
+        <p><a href="/resume.html">resum&eacute;</a></p>
+        <p><a href="/about.html">about</a><p>
+      </div>
+    </nav>
+  </div>
+</div>
+<div id="main">
+  <div class="post">
+    <h1>Using a 3rd Party Email Client with iCloud+ Custom Domain</h1>
+    <div id="post-body">
+      <h2 id="why" tabindex="-1">Why <a class="header-anchor" href="#why">#</a></h2>
+      <p>I've just signed up for <em>iCloud+</em> to use the "<a target="_blank" href="https://support.apple.com/en-us/HT212514">Custom Email Domain</a>" feature as my email host. At $0.99/mo it certainly beats Google Workspace's $6/mo, and hey, my iPhone yelled at me just this morning that my iCloud storage was full. I was fully expecting there to be some element to keep me in the Apple ecosystem and make using 3rd party apps a pain, but to my surprise - <strong>other than no documentation on the process - it was doable</strong>.</p>
+
+      <h2 id="how">How <a class="header-anchor" href="#how">#</a></h2>
+      <p>After you've set up a custom email domain through iCloud (must be done on an Apple device of course), to add the email to your 3rd party:</p>
+      <ol>
+      <li>If you haven't already; <strong>add your regular @icloud.com email to your email client</strong>. if you haven't done this before, you'll find you <strong>need to generate an <a target="_blank" href="https://support.apple.com/en-us/HT204397">app specific password</a></strong>, and if your client doesn't autofill IMAP/SMTP the details, see <a target="_blank" href="https://support.apple.com/en-us/102525">here</a>.</li>
+      <li>If you didn't recently add the records to your domain, you might not have been instructed to add a <a href="https://www.cloudflare.com/learning/dns/dns-records/dns-spf-record/" target="_blank">DNS SPF</a> record to your domain. Without this, the root iCloud account would not be authorized to send emails on behalf of your custom domain. This should come in the form of a TXT record saying <code class="language-">"v=spf1 include:icloud.com ~all"</code>, but I'd check the current documentation on Apple's end for this if unsure.</li>
+      <li><strong>Add your custom domain email as an 'alias' for the iCloud root account on your mail client</strong>. This can come in many forms, so you might need to dig around the documentation for your client. On Thunderbird this can be found under <code class="language-">Account Settings -&gt; [your iCloud account] -&gt; Manage Identities</code>. Basically you just want to find the setting that allows you to send mail <em>from your iCloud account</em> <strong>as</strong> your custom email.</li>
+      <li>Some mail clients will be upset that your domain doesn't say anything about how to handle DMARC, so you might want to add a TXT record under <code class="language-">_dmarc.yourcustomdomain.com</code> with the body: <code class="language-">"v=DMARC1; p=none"</code>.</li>
+      </ol>
+      <p>Following these steps I am getting a 100% rating on <a target="_blank" href="http://mail-tester.com">mail-tester.com</a>.</p>
+    </div>
+  </div>
+</div>
+</div>
+<script src="/prismjs/prism.js"></script>
+</body>
+</html>
