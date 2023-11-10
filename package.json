@@ -1,0 +1,19 @@
+{
+  "name": "rvrx.github.io",
+  "version": "1.0.0",
+  "description": "TODO",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "markdown-it": "^13.0.2",
+    "prismjs": "^1.29.0"
+  }
+}
