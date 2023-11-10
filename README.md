@@ -1,29 +1,24 @@
-## Todo
-- Try background blur on sidebar
-- Fix fonts
-- align listing text to top of background color
-- work page?
-  - Do I want it?
-  - what will be on it...?
-- More images
-- Image optimization
-  - https://stackoverflow.com/questions/27934548/load-a-low-res-background-image-first-then-a-high-res-one
-  - https://developer.mozilla.org/en-US/docs/Web/CSS/image/image-set
-  - https://web.dev/serve-responsive-images/
-  - https://www.imagemagick.org/script/index.php
-- Homepage icons should chnage color on hover
-- Meta tags
-- Canonical tag if multiple domains?
-- Some visual feedback on blog listing hover
-- blurred images for work page
+# Build Process
+Type up markdown file on wiki.js, copy generated html for just the blog post, and insert into the `post.html` template.
 
-### External tasks
-- Point domains to proper places
-  - lugubrious.rip -> Add link to homepage, cole-manning.com?
-  - colermanning.com -> Homepage
-  - cole-manning.com -> Homepage
-  - rvrx.dev -> Homepage
-  - blog.rvrx.dev -> Blog
-  - skyborne.net -> change bottom left link to rvrx.dev
-  - goicc.skyborne.net -> change footer link to include rvrx.dev
-- Google analytics?
+
+# Rethinking Build Process
+Current build process is maybe worse than the old Python build process. I kinda forget why I decided to move off that... I think there was a failed Jekyll setup in between...
+
+Lessons from last build process
+1. Github Actions is messy for this use-case, just don't use it
+2. Python setup got messy, but it still could prove clean if well thought out beforehand...
+
+
+Ideally I keep the current layout, I just create a translator. Biggest change from last builder would be the usage of PrismJS for codeblocks
+
+Maybe take a look at what Wiki.JS uses? (markdown-it). I like its use of a table at the top with tags and other meta-data Ehhh... I don't reeeealy want to use npm/node whatever. Something more universally installed like Python iiiiis nicer. Oh, there is a markdown-it port for python!: [executablebooks/markdown-it-py](https://github.com/executablebooks/markdown-it-py)
+
+WikiJS
+1. `markdown-it` with many plugins: https://github.com/requarks/wiki/blob/fd91caff1da1683473fc3b65ecab84a41f4ebb8a/client/components/editor/editor-markdown.vue#L199
+2. `PrismJS`
+3. npm `mermaid` for markdown charts
+
+
+yeahhhh... but the python port of markdown-it doesn't seem super maintained these days... Not sure how well it handles python3... plugin support is minimal...
+
