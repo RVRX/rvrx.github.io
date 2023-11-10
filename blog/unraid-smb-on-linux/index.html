@@ -61,8 +61,8 @@ chmod 600 .smbpasswd_unraid</code></pre>
       <li><code class="language-">//10.0.1.37/myshare</code> - path to smb share</li>
       <li><code class="language-">/mnt/ClientPath</code> - local path. This is often a <code class="language-">/mnt/...</code> location. This path must be created locally first, so do a quick mkdir here if it is not.</li>
       <li><code class="language-">cifs</code> - old name for SMB</li>
-      <li><code class="language-">_netdev</code> - tells mount that the filesystem is on a device that require network access. This will ensure that the system won't try to mount this share until its network services have finished setting up.</li>
-      <li><code class="language-">noserverino</code> - <strong>IMPORANT FOR UNRAID</strong>: "Client generates inode numbers itself rather than using the actual ones from the server." This will prevent stale file handle errors after the Unraid Mover is invoked. <em>More on this later...</em></li>
+      <li><code class="language-">_netdev</code> - tells <code class="language-">mount</code> that the filesystem is on a device that require network access. This will ensure that the system won't try to mount this share until its network services have finished setting up.</li>
+      <li><code class="language-">noserverino</code> - <strong>IMPORANT FOR UNRAID</strong>: "Client generates inode numbers itself rather than using the actual ones from the server." This will prevent stale file handle errors after the Unraid Mover is invoked. <em><a href="#the-noserverino-fix">More on this later...</a></em></li>
       <li><code class="language-">credentials=...</code> - path to our credentials file</li>
       <li><code class="language-">0 0</code> - <em>fs_freq</em> and <em>fs_passno</em>. Very commonly these are both 0.</li>
       </ul>
@@ -70,7 +70,7 @@ chmod 600 .smbpasswd_unraid</code></pre>
       <p>Check the manual for <code class="language-">mount</code> and <code class="language-">mount-cifs</code> on your system, under the "FILESYSTEM-INDEPENDENT MOUNT OPTIONS" section for more options you might want to consider, such as explicit read and write access declarations.</p>
       <h3 class="toc-header" id="the-noserverino-fix"><a href="#the-noserverino-fix" class="toc-anchor">##</a> The <em>noserverino</em> Fix</h3>
       <p>I have found very little background information on the /why/ of this fix, but here is the issue as I understand it:</p>
-      <p>When Unraid invokes its Mover, a file is moved from one disk to another. This causes a change in the “inode” number for this file. This inode holds important metadata about this file and its location, and is therefore required to access the file. When this change happens, the client remains ignorant, and on its next attempt to access this directory or file, it runs into the “stale file handle” issue. This is due to the file handle now pointing to an inode number that is, ultimately, invalid. Normally, in similar scenarios, the inode (and therefore file handle) would be refreshed, avoiding this. But in some edge-cases in CIFS (or even NFS), such as in the case of the Unraid mover, the server does not notify the client of the inode refresh. This is why the system flags it as “stale”. it is now effectively a null-pointer. The client has no idea where this file has gone.</p>
+      <p>When Unraid invokes its Mover, a file is moved from one disk to another. This causes a change in the “inode” number for this file. This inode holds important metadata about this file and its location, and is therefore required to access the file. When this change happens, the client remains ignorant, and on its next attempt to access this directory or file, it runs into the “stale file handle” issue. This is due to the file handle now pointing to an inode number that is, ultimately, invalid. Normally, in similar scenarios, the inode (and therefore file handle) would be refreshed, avoiding this. But in some edge-cases in CIFS (or even NFS), such as in the case of the Unraid mover, the server does not notify the client of the inode refresh. This is why the system flags it as “stale”. It is now effectively a null-pointer. The client has no idea where this file has gone.</p>
       <p>Under normal SMB operation:</p>
       <ol>
       <li>Server provides inode <em>number</em> (not actual inode information) to client.</li>
@@ -80,7 +80,7 @@ chmod 600 .smbpasswd_unraid</code></pre>
       <p>Client-side inode via <code class="language-">noserverino</code> flag:</p>
       <ol>
       <li>Client generates its own inode and uses that to reference files.</li>
-      <li>When the Mover causes a quiet inode change, the client no longer cares, it's got its own reference locally, and the change is not breaking.</li>
+      <li>When the Mover causes a quiet inode change, the client no longer cares, it has got its own reference locally, and the change is not breaking.</li>
       </ol>
       <p><br>
       <br>
