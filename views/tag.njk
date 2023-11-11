@@ -7,10 +7,11 @@
 </head>
 <body>
 <ul>
+<h1>{{ tagName }}</h1>
 {% for post in posts -%}
 	{%- for postTag in post.tags -%}
 		{%- if postTag === tagName -%}
-			<li>{{ post.title }}</li>
+			<li><a href="{{ post._path.slice(6) }}">{{ post.title }}</a></li>
 		{%- endif -%}
 	{%- endfor -%}
 {%- endfor %}
