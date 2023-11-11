@@ -33,6 +33,7 @@
     "markdown-it-task-lists": "2.1.1",
     "markdown-it-underline": "1.0.1",
     "mermaid": "10.6.1",
+    "nunjucks": "^3.2.4",
     "plantuml": "0.0.2",
     "prismjs": "^1.29.0",
     "twemoji": "14.0.2"
