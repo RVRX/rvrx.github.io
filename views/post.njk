@@ -21,32 +21,9 @@
     <link href="/prismjs/prism.css" rel="stylesheet">
     <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FMR0C9R487');
-</script>
+{% include "gtag.njk" %}
 <body>
-<div id="sidebar">
-    <div id="sticky-sidebar">
-        <a href="/">
-            <h1>RVRX</h1>
-            <h2>Cole Manning</h2>
-        </a>
-    <nav>
-        <div>
-            <p><a href="/blog" class="current-page">blog</a></p>
-            <p><a href="/work.html">work</a></p>
-            <p><a href="/resume.html">resum&eacute;</a></p>
-            <p><a href="/about.html">about</a><p>
-        </div>
-    </nav>
-    </div>
-</div>
+{% include "sidebar.njk" %}
 <div id="main">
     <div class="post">
         <h1>{{ post.title }}</h1>
