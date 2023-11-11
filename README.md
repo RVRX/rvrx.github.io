@@ -1,24 +1,19 @@
-# Build Process
-Type up markdown file on wiki.js, copy generated html for just the blog post, and insert into the `post.html` template.
+# RVRX.dev Website
+Markdown to HTML website suite for my primary domain and its blog.
+
+Dependencies: NodeJS (& NPM).
+After cloning, run `npm install` in root repository folder. Run `npm start` to build new changes.
+
+## Project Structure
+- `public/` is the directory that should be servied to the web
+- New markdown posts should be placed into `staging/`
+- `views/` contains Nunjucks templates
+- `server.js` is the main NodeJS script that builds the site
+
+## Writing new blog posts
+New blog post files are to be written in markdown and placed into the `staging/` folder at the root of this repo. Running `npm start` will convert these files to markdown, and place them into the `public/blog/`  directory.
 
 
-# Rethinking Build Process
-Current build process is maybe worse than the old Python build process. I kinda forget why I decided to move off that... I think there was a failed Jekyll setup in between...
-
-Lessons from last build process
-1. Github Actions is messy for this use-case, just don't use it
-2. Python setup got messy, but it still could prove clean if well thought out beforehand...
-
-
-Ideally I keep the current layout, I just create a translator. Biggest change from last builder would be the usage of PrismJS for codeblocks
-
-Maybe take a look at what Wiki.JS uses? (markdown-it). I like its use of a table at the top with tags and other meta-data Ehhh... I don't reeeealy want to use npm/node whatever. Something more universally installed like Python iiiiis nicer. Oh, there is a markdown-it port for python!: [executablebooks/markdown-it-py](https://github.com/executablebooks/markdown-it-py)
-
-WikiJS
-1. `markdown-it` with many plugins: https://github.com/requarks/wiki/blob/fd91caff1da1683473fc3b65ecab84a41f4ebb8a/client/components/editor/editor-markdown.vue#L199
-2. `PrismJS`
-3. npm `mermaid` for markdown charts
-
-
-yeahhhh... but the python port of markdown-it doesn't seem super maintained these days... Not sure how well it handles python3... plugin support is minimal...
+### Dev-notes
+For a while I was using my personal WikiJS wiki to write my blogs, then copy and paste bits and pieces of the HTML that would generate into a rough template of what a 'blog post' looked like on my website. Therefore, to try and keep the process somewhat similar a lot of the tech stack was lifted straight from WikiJS' dependencies. The markdown-it configuration and plugins are lifted wholesale (yes, with much unneeded and improperly setup bloat for my use-case) from WikiJS' use. NodeJS was used for the same reason. I use Prism differently than how WikiJS did as I'm carrying it over from the old blog implementation, and didn't want to break it just yet. I personally chose Nunjucks for the template engine, as it makes the process of showing the built markdown into a post a tad easier.
 
