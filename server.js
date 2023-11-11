@@ -86,41 +86,46 @@ function generatePostFromMd(filePathIn, filePathOut) {
   //   "tags": [tag1, tag2, ...]
   // }
 
-    fs.readFile(filePathIn, 'utf8', (err, file_data) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        // EXTRACT META-DATA FROM POST
-        var splitFileData = file_data.split('<!--# START POST #-->');
-        var post = JSON.parse(splitFileData[0]);
-        check_post_fields(post, filePathIn);  // send warnings if fields are missing
-        console.debug('metadata extracted');
 
-        // Extract Markdown
-        var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
-        post.body = postHTMLBody;
-        console.debug('markdown extracted');
+  var file_data;
+  try {
+    file_data = fs.readFileSync(filePathIn, 'utf8');
+    console.debug('file read');
+  } catch (err) {
+    console.error(err);
+    return 0;
+  }
 
-        // apply input to template
-        nunjucks.configure('views', { autoescape: false });
-        var finalRender = nunjucks.render('post.njk', { post: post });
-        console.debug('template applied');
+  // EXTRACT META-DATA FROM POST
+  var splitFileData = file_data.split('<!--# START POST #-->');
+  var post = JSON.parse(splitFileData[0]);
+  check_post_fields(post, filePathIn);  // send warnings if fields are missing
+  console.debug('metadata extracted');
 
+  // Extract Markdown
+  var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
+  post.body = postHTMLBody;
+  console.debug('markdown extracted');
 
-        // save to final .html file
-        fs.writeFile(filePathOut, finalRender, err => {
-        if (err) {
-          // TODO, handle this error somehow. Error counter?
-          console.error(err);
-        }
-        // file written successfully
-        console.debug('HTML file written')
+  // apply input to template
+  nunjucks.configure('views', { autoescape: false });
+  var finalRender = nunjucks.render('post.njk', { post: post });
+  console.debug('template applied');
 
 
-        console.log('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
-        });
-    });
+  // save to final .html file
+  try {
+    fs.writeFileSync(filePathOut, finalRender);
+    // file written successfully
+    console.debug('HTML file written')
+  } catch (err) {
+    console.error(err);
+  }
+
+
+  console.log('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
+  post.body = null;
+  return post;
 }
 
 
