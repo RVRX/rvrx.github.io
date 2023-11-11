@@ -85,34 +85,9 @@ for (var i = stagedPosts.length - 1; i >= 0; i--) {
     // ^TODO, compare modified dates of public vs staging md? Only build updated ones? Ask before overwrite?
   }
 }
-console.debug('[dbg]: postsWithTags.88');
-console.debug(postsWithTags);
 
 // generate tag pages (based off only the pages that have tags)
 generateTagPagesFromPageMetaData(postsWithTags);
-
-// generate tag pages for each post by using the returned meta, data
-// for (var i = postsWithTags.length - 1; i >= 0; i--) {  // for each post
-//   const tagPages = fs.readdirSync('public/tmp/' + 'tags/');
-//   // for each tag
-//   //  - does tag-page exist?
-//   //    * N: create it, add this page
-//   //    * Y: is this page on the tag-page?
-//   //      + N: add this page
-//   //      + Y: noop
-//   const page = postsWithTags[i];
-//   console.log("PAGE: " + page._path);
-//   for (var j = page.tags.length - 1; j >= 0; j--) {
-//     const tag = page.tags[j];
-//     console.log("TAG: " + tag); // a tag
-//     if (tagPages.includes(tag)) {
-//       // tag-page exists
-//       // TODO: is this page on the tag-page?
-//     } else {
-//       //TODO: create tag page, add this page
-//     }
-//   }
-// }
 
 
 function generateTagPagesFromPageMetaData(pageMetaDataArray) {
@@ -121,26 +96,20 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
   // generate tag pages for each post by using the returned meta, data
   for (var i = postsWithTags.length - 1; i >= 0; i--) {  // for each post
     const page = postsWithTags[i];
-    console.log("PAGE: " + page._path);
     for (var j = page.tags.length - 1; j >= 0; j--) {  // for each tag
       const tag = page.tags[j];
-      console.log("TAG: " + tag); // a tag
       if (!uniqueTags.includes(tag)) {uniqueTags.push(tag)}
     }
   }
 
-  console.log('unique tags: ' + uniqueTags)
+  console.debug('unique tags: ' + uniqueTags)
 
 
   // for each tag, build a page
   nunjucks.configure('views', { autoescape: false });
   for (var i = uniqueTags.length - 1; i >= 0; i--) {
-    // console.log(pageMetaDataArray);
-    // console.log("parsing him out");
-    // console.log(pageMetaDataArray[0].tags);
     const uniqueTag = uniqueTags[i];
     var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray });
-    console.log('\nTAG-PAGE FOR ' + uniqueTag + ":\n" + finalRender + '\n');
 
     // save to final .html file
     try {
@@ -152,7 +121,7 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
       const tagFilePath = tagDir + '/index.html';
       fs.writeFileSync(tagFilePath, finalRender);
       // file written successfully
-      console.debug(uniqueTag + " --> " + tagFilePath);
+      console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
     } catch (err) {
       console.error(err);
       // TODO: Handle error
@@ -177,7 +146,7 @@ function generatePostFromMd(filePathIn, filePathOut) {
   //   "tags": [tag1, tag2, ...]
   // }
 
-  console.log("\nGENERATING: " + filePathIn + " ---> " + filePathOut);
+  console.log("\nGENERATING POST: " + filePathIn + " ---> " + filePathOut);
 
 
   var file_data;
@@ -217,7 +186,7 @@ function generatePostFromMd(filePathIn, filePathOut) {
   }
 
 
-  console.log('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
+  console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
   post.body = null;
   post._path = filePathOut;
   return post;
@@ -236,8 +205,6 @@ function check_post_fields(post, filePathIn) {
   // if (!post.dateEdited) {console_warn("MISSING dateEdited (" + filePathIn + ")");}
   if (!post.datePosted) {console_warn("MISSING datePosted (" + filePathIn + ")");}
   if (!post.tags) {console_warn("MISSING tags (" + filePathIn + ")");}
-
-
 }
 
 function console_warn(argument) {
