@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ tagName }}</title>
+</head>
+<body>
+<ul>
+{% for post in posts -%}
+	{%- for postTag in post.tags -%}
+		{%- if postTag === tagName -%}
+			<li>{{ post.title }}</li>
+		{%- endif -%}
+	{%- endfor -%}
+{%- endfor %}
+</ul>
+</body>
+</html>
