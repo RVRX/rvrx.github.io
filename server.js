@@ -24,6 +24,9 @@ import 'katex/dist/contrib/mhchem.js' // TODO: added .js, as node wasn't finding
 import twemoji from 'twemoji'
 import plantuml from 'plantuml' // TODO: was from './markdown/plantuml'
 
+//Nunjucks (Template Engine)
+import nunjucks from 'nunjucks'
+
 // Mermaid
 import mermaid from 'mermaid'
 
@@ -65,30 +68,87 @@ const md = new MarkdownIt({
 import Prism from 'prismjs'
 
 
-// TODO, read in from file, maybe use templating engine with like {{}} type guys.
-const pretext = '<link href="/sidebar.css" rel="stylesheet"><link href="/post.css" rel="stylesheet"><link href="/prismjs/prism.css" rel="stylesheet">\n'
+
+// // careful, readfile() is synchronous!
+// fs.readFile('./tmp/post.md', 'utf8', (err, file_data) => {
+//   if (err) {
+//     console.error(err);
+//     return;
+//   }
+
+//     const post = {};
+
+//     post.title = "Dynamic DNS";
+//     post.desc = "Dynamic DNS to resolve the server IP reliably from outside the network";
+//     post.published = true;
+//     post.dateEdited = Date.now();
+//     post.datePosted = Date.now();
+//     post.tags = ["tag1", "tag2"];
+//     // console.log(post);
 
 
-// careful, readfile() is synchronous!
-fs.readFile('./blog/unraid-smb-on-linux/index.md', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  // console.log(data);
-  md_to_html(data)
-});
+
+//     // EXTRACT META-DATA FROM POST
+//     var splitFileData = file_data.split('<!--# START POST #-->');
+//     var extractedPostMetadata = JSON.parse(splitFileData[0]);
+//     console.debug('metadata extracted');
+
+//     // Extract Markdown
+//     var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
+//     console.debug('markdown extracted');
+
+//     // apply input to template
+//     nunjucks.configure('views', { autoescape: true });
+//     var finalRender = nunjucks.render('post.njk', { post: extractedPostMetadata });
+//     console.debug('template applied');
 
 
-function md_to_html(argument) {
-    var html_output = md.render(argument);
-    html_output = pretext + html_output
+//     // save to final .html file
+//     // TODO...
+//     fs.writeFile('./tmp/out.html', finalRender, err => {
+//     if (err) {
+//       console.error(err);
+//     }
+//     // file written successfully
+//     console.debug('HTML file written')
+//     });
 
-    // write file
-    fs.writeFile('./tmp/out.html', html_output, err => {
-    if (err) {
-      console.error(err);
-    }
-    // file written successfully
+
+
+// });
+generatePostFromMd('./tmp/post.md', './tmp/out.html');
+
+
+function generatePostFromMd(filePathIn, filePathOut) {
+
+    fs.readFile(filePathIn, 'utf8', (err, file_data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        // EXTRACT META-DATA FROM POST
+        var splitFileData = file_data.split('<!--# START POST #-->');
+        var extractedPostMetadata = JSON.parse(splitFileData[0]);
+        console.debug('metadata extracted');
+
+        // Extract Markdown
+        var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
+        console.debug('markdown extracted');
+
+        // apply input to template
+        nunjucks.configure('views', { autoescape: true });
+        var finalRender = nunjucks.render('post.njk', { post: extractedPostMetadata });
+        console.debug('template applied');
+
+
+        // save to final .html file
+        // TODO...
+        fs.writeFile(filePathOut, finalRender, err => {
+        if (err) {
+          console.error(err);
+        }
+        // file written successfully
+        console.debug('HTML file written')
+        });
     });
 }
