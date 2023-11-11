@@ -67,7 +67,28 @@ const md = new MarkdownIt({
 // Prism (Syntax Highlighting)
 import Prism from 'prismjs'
 
-generatePostFromMd('public/tmp/post.md', 'public/tmp/out.html');
+
+
+// search for posts in staging directory
+const stagingPath = 'staging/';
+var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+
+// for each staged post generate blog HTML, and take note of post tags
+var postsWithTags = [];
+for (var i = stagedPosts.length - 1; i >= 0; i--) {
+  const postStagedPath = stagingPath + stagedPosts[i];
+  const postPublishedPath = 'public/tmp/' + stagedPosts[i].slice(0,-2) + 'html';  // TODO, change to blog dir
+  const ret = generatePostFromMd(postStagedPath, postPublishedPath);
+  if ((ret !== 7) && (ret.tags)) { // if marked as published & has tags
+    postsWithTags[i] = ret;
+  }
+}
+console.log("\n\n" + JSON.stringify(postsWithTags));
+
+// generate tag pages for each post by using the returned meta, data
+// for (var i = postsWithTags.length - 1; i >= 0; i--) {
+//   postsWithTags[i];
+// }
 
 
 /**
@@ -86,6 +107,8 @@ function generatePostFromMd(filePathIn, filePathOut) {
   //   "tags": [tag1, tag2, ...]
   // }
 
+  console.log("\nGENERATING: " + filePathIn + " ---> " + filePathOut);
+
 
   var file_data;
   try {
@@ -93,14 +116,15 @@ function generatePostFromMd(filePathIn, filePathOut) {
     console.debug('file read');
   } catch (err) {
     console.error(err);
-    return 0;
+    return 1;
   }
 
   // EXTRACT META-DATA FROM POST
   var splitFileData = file_data.split('<!--# START POST #-->');
   var post = JSON.parse(splitFileData[0]);
-  check_post_fields(post, filePathIn);  // send warnings if fields are missing
   console.debug('metadata extracted');
+  if (post.published == false) {console.log('post not published, skipping'); return 7;}
+  check_post_fields(post, filePathIn);  // send warnings if fields are missing
 
   // Extract Markdown
   var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
