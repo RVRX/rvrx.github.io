@@ -31,7 +31,7 @@ import nunjucks from 'nunjucks'
 import mermaid from 'mermaid'
 
 
-// markdown-it Config
+// markdown-it Config [[ NOTE: Copied from Wiki.JS setup ]]
 const md = new MarkdownIt({
   html: true,
   breaks: true,
@@ -67,59 +67,24 @@ const md = new MarkdownIt({
 // Prism (Syntax Highlighting)
 import Prism from 'prismjs'
 
+generatePostFromMd('public/tmp/post.md', 'public/tmp/out.html');
 
 
-// // careful, readfile() is synchronous!
-// fs.readFile('./tmp/post.md', 'utf8', (err, file_data) => {
-//   if (err) {
-//     console.error(err);
-//     return;
-//   }
-
-//     const post = {};
-
-//     post.title = "Dynamic DNS";
-//     post.desc = "Dynamic DNS to resolve the server IP reliably from outside the network";
-//     post.published = true;
-//     post.dateEdited = Date.now();
-//     post.datePosted = Date.now();
-//     post.tags = ["tag1", "tag2"];
-//     // console.log(post);
-
-
-
-//     // EXTRACT META-DATA FROM POST
-//     var splitFileData = file_data.split('<!--# START POST #-->');
-//     var extractedPostMetadata = JSON.parse(splitFileData[0]);
-//     console.debug('metadata extracted');
-
-//     // Extract Markdown
-//     var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
-//     console.debug('markdown extracted');
-
-//     // apply input to template
-//     nunjucks.configure('views', { autoescape: true });
-//     var finalRender = nunjucks.render('post.njk', { post: extractedPostMetadata });
-//     console.debug('template applied');
-
-
-//     // save to final .html file
-//     // TODO...
-//     fs.writeFile('./tmp/out.html', finalRender, err => {
-//     if (err) {
-//       console.error(err);
-//     }
-//     // file written successfully
-//     console.debug('HTML file written')
-//     });
-
-
-
-// });
-generatePostFromMd('./tmp/post.md', './tmp/out.html');
-
-
+/**
+ * Generates a blog post page from a markdown file.
+ * The MD file must begin with a JSON listing of the post's meta-data
+ **/
 function generatePostFromMd(filePathIn, filePathOut) {
+
+  // const post = {
+  //   "title": "post title",
+  //   "subtitle": "post subtitle",
+  //   "desc": "SEO description",
+  //   "published": false,
+  //   "dateEdited": 0,
+  //   "datePosted": 0,
+  //   "tags": [tag1, tag2, ...]
+  // }
 
     fs.readFile(filePathIn, 'utf8', (err, file_data) => {
         if (err) {
@@ -128,27 +93,58 @@ function generatePostFromMd(filePathIn, filePathOut) {
         }
         // EXTRACT META-DATA FROM POST
         var splitFileData = file_data.split('<!--# START POST #-->');
-        var extractedPostMetadata = JSON.parse(splitFileData[0]);
+        var post = JSON.parse(splitFileData[0]);
+        check_post_fields(post, filePathIn);  // send warnings if fields are missing
         console.debug('metadata extracted');
 
         // Extract Markdown
         var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
+        post.body = postHTMLBody;
         console.debug('markdown extracted');
 
         // apply input to template
-        nunjucks.configure('views', { autoescape: true });
-        var finalRender = nunjucks.render('post.njk', { post: extractedPostMetadata });
+        nunjucks.configure('views', { autoescape: false });
+        var finalRender = nunjucks.render('post.njk', { post: post });
         console.debug('template applied');
 
 
         // save to final .html file
-        // TODO...
         fs.writeFile(filePathOut, finalRender, err => {
         if (err) {
+          // TODO, handle this error somehow. Error counter?
           console.error(err);
         }
         // file written successfully
         console.debug('HTML file written')
+
+
+        console.log('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
         });
     });
 }
+
+
+/**
+ * Check for missing fields in a post object
+ * TODO: could be moved into an object function
+ **/
+function check_post_fields(post, filePathIn) {
+  if (!post.title) {console_warn("MISSING title (" + filePathIn + ")");}
+  if (!post.subtitle) {console_warn("MISSING subtitle (" + filePathIn + ")");}
+  if (!post.desc) {console_warn("MISSING desc (" + filePathIn + ")");}
+  if (!post.published) {console_warn("MISSING published (" + filePathIn + ")");}
+  // if (!post.dateEdited) {console_warn("MISSING dateEdited (" + filePathIn + ")");}
+  if (!post.datePosted) {console_warn("MISSING datePosted (" + filePathIn + ")");}
+  if (!post.tags) {console_warn("MISSING tags (" + filePathIn + ")");}
+
+
+}
+
+function console_warn(argument) {
+  console.warn("\x1b[33m" + argument + "\x1b[0m");
+}
+
+
+
+
+
