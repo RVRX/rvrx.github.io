@@ -68,17 +68,36 @@ const md = new MarkdownIt({
 import Prism from 'prismjs'
 
 
+const blogDir = 'public/tmp/'
+
 
 // search for posts in staging directory
 const stagingPath = 'staging/';
 var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+for (var i = stagedPosts.length - 1; i >= 0; i--) {
+  console.debug(stagedPosts[i]);
+  var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
+  // get md name
+  const isMarkdownFile = (element) => element.endsWith(".md");
+  var markdownFileIndex = aPostAndItsAssets.findIndex(isMarkdownFile);
+  if (markdownFileIndex === -1) {
+    console.error('Markdown file not found in staging directory, skipping');
+    console_warn('Markdown file not found in staging directory, skipping');
+    exit(1);
+  }
+  stagedPosts[i] = stagedPosts[i] + '/' + aPostAndItsAssets[markdownFileIndex];
+}
+console.log('stagedPosts');
+console.log(stagedPosts);
 
 // for each staged post generate blog HTML, and take note of post tags
 var allPostsWithTags = [];
 var allPosts = [];
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  const postStagedPath = stagingPath + stagedPosts[i];
-  const postPublishedPath = 'public/tmp/' + stagedPosts[i].slice(0,-2) + 'html';  // TODO, change to blog dir
+  const postStagedPath = stagingPath + stagedPosts[i];  // public/[staging]/*/*.md
+  const postPublishedPath = blogDir + stagedPosts[i].substring(0, stagedPosts[i].lastIndexOf("/")) + '/';  // public/[blog]/*/*.html --> ../[blog]/*/
+  console.log("postPublishedPath");
+  console.log(postPublishedPath);
   const ret = generatePostFromMd(postStagedPath, postPublishedPath);
   allPosts[i] = ret;  // TODO: probably only need one post array, should get rid of allPostsWithTags
   if ((ret !== 7) && (ret.tags)) { // if marked as published & has tags
@@ -120,9 +139,12 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
     // save to final .html file
     try {
       // create dirs
-      const tagDir = 'public/tmp/' + 'tags/' + uniqueTag;
+      const tagDir = blogDir + 'tags/' + uniqueTag;
       if (!fs.existsSync(tagDir)){
-          fs.mkdirSync(tagDir);
+          fs.mkdirSync(tagDir, { recursive: true }, (err) => {
+            if (err) throw err;
+          })
+
       }
       const tagFilePath = tagDir + '/index.html';
       fs.writeFileSync(tagFilePath, finalRender);
@@ -138,8 +160,7 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
 
 // TODO: should be a single function for saving templates. generatePage(*.njk, templateVars[], filePath);
 function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
-  // body...
-  console.log("generateBlogIndexFromPageMeataData:")
+  console.log("generateBlogIndexFromPageMetaData:")
   console.log(pageMetaDataArray);
 
   // for each post
@@ -152,7 +173,7 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
 
   // save to final .html file
   try {
-    fs.writeFileSync('public/' + 'tmp/' + 'index.html', finalRender);
+    fs.writeFileSync(blogDir + 'index.html', finalRender);
     // file written successfully
     console.debug('HTML file written')
   } catch (err) {
@@ -167,7 +188,7 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
  * The MD file must begin with a JSON listing of the post's meta-data
  * RETURNS: Post meta-data
  **/
-function generatePostFromMd(filePathIn, filePathOut) {
+function generatePostFromMd(filePathIn, directoryOut) {
 
   // const post = {
   //   "title": "post title",
@@ -179,7 +200,7 @@ function generatePostFromMd(filePathIn, filePathOut) {
   //   "tags": [tag1, tag2, ...]
   // }
 
-  console.log("\nGENERATING POST: " + filePathIn + " ---> " + filePathOut);
+  console.log("\nGENERATING POST: " + filePathIn + " ---> " + directoryOut);
 
 
   var file_data;
@@ -212,11 +233,34 @@ function generatePostFromMd(filePathIn, filePathOut) {
   console.debug('template applied');
 
 
-  // save to final .html file
+  // save to final index.html file
   try {
-    fs.writeFileSync(filePathOut, finalRender);
+    
+    //mkdir
+    fs.mkdirSync(directoryOut, { recursive: true }, (err) => {
+      if (err) throw err;
+    })
+
+    fs.writeFileSync(directoryOut + 'index.html', finalRender);
     // file written successfully
     console.debug('HTML file written')
+
+    // copy all other assets over
+    // all items in filePathin, except the .md, should be copied over to directoryOut
+    console.log("filePathIn: "+ filePathIn);
+    console.log("directoryOut: "+ directoryOut);
+    const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
+    var postAssets = fs.readdirSync(directoryIn).filter((asset) => !asset.endsWith('.md'));
+    process.stdout.write('postAssets');
+    console.log(postAssets);
+    for (var i = postAssets.length - 1; i >= 0; i--) {
+      postAssets[i];
+      fs.copyFileSync(directoryIn + postAssets[i], directoryOut + postAssets[i]);
+      console.log("copy: '" + directoryIn + postAssets[i] + "'' to '" + directoryOut + postAssets[i] + "'");
+    }
+    
+
+
   } catch (err) {
     console.error(err);
   }
@@ -224,7 +268,7 @@ function generatePostFromMd(filePathIn, filePathOut) {
 
   console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
   post.body = null;
-  post._path = filePathOut;
+  post._path = directoryOut;
   return post;
 }
 

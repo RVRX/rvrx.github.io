@@ -1,11 +1,11 @@
 {
-  "title": "Dynamic DNS",
-  "subtitle": "A slighty longer subtitle",
-  "desc": "Dynamic DNS to resolve the server IP reliably from outside the network",
+  "title": "Demo 3",
+  "subtitle": "demo 3 subtitle",
+  "desc": "demo 3Dynamic DNS to resolve the server IP reliably from outside the network",
   "published": true,
-  "dateEdited": 1699708131979,
-  "datePosted": 1699708131979,
-  "tags": [ "tag1", "tag2" ]
+  "dateEdited": 2399708131979,
+  "datePosted": 2399708131979,
+  "tags": [ "tag1", "tag3" ]
 }
 <!--# START POST #-->
 
@@ -16,6 +16,8 @@ Install SMB utlitiy to allow CIFS mounting:
 ```
 apt-get install cifs-utils
 ```
+
+![HDD Image](hdd_pcb.jpg)
 
 ## Creating Protected File with SMB Credentials
 Create secure SMB password file:
