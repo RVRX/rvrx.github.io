@@ -74,28 +74,34 @@ const stagingPath = 'staging/';
 var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
 
 // for each staged post generate blog HTML, and take note of post tags
-var postsWithTags = [];
+var allPostsWithTags = [];
+var allPosts = [];
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
   const postStagedPath = stagingPath + stagedPosts[i];
   const postPublishedPath = 'public/tmp/' + stagedPosts[i].slice(0,-2) + 'html';  // TODO, change to blog dir
   const ret = generatePostFromMd(postStagedPath, postPublishedPath);
+  allPosts[i] = ret;  // TODO: probably only need one post array, should get rid of allPostsWithTags
   if ((ret !== 7) && (ret.tags)) { // if marked as published & has tags
-    postsWithTags[i] = ret;
+    allPostsWithTags[i] = ret;
     // TODO, copy finished mds to public
     // ^TODO, compare modified dates of public vs staging md? Only build updated ones? Ask before overwrite?
   }
+
 }
 
-// generate tag pages (based off only the pages that have tags)
-generateTagPagesFromPageMetaData(postsWithTags);
+// generate tag pages (based off only the pages that have tags), TODO, use allPosts and Nunjucks.reject(page.tag === null)
+generateTagPagesFromPageMetaData(allPostsWithTags);
+
+// generate blog homepage (based off all pages [sorted by date])
+generateBlogIndexFromPageMetaData(allPosts.sort((a,b) => b.datePosted - a.datePosted));
 
 
 function generateTagPagesFromPageMetaData(pageMetaDataArray) {
   // gather unique tags...
   var uniqueTags = [];
   // generate tag pages for each post by using the returned meta, data
-  for (var i = postsWithTags.length - 1; i >= 0; i--) {  // for each post
-    const page = postsWithTags[i];
+  for (var i = allPostsWithTags.length - 1; i >= 0; i--) {  // for each post
+    const page = allPostsWithTags[i];
     for (var j = page.tags.length - 1; j >= 0; j--) {  // for each tag
       const tag = page.tags[j];
       if (!uniqueTags.includes(tag)) {uniqueTags.push(tag)}
@@ -130,9 +136,36 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
 }
 
 
+// TODO: should be a single function for saving templates. generatePage(*.njk, templateVars[], filePath);
+function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
+  // body...
+  console.log("generateBlogIndexFromPageMeataData:")
+  console.log(pageMetaDataArray);
+
+  // for each post
+  // fill template
+  // apply input to template
+  nunjucks.configure('views', { autoescape: false });
+  var finalRender = nunjucks.render('blog-index.njk', { posts: pageMetaDataArray });
+  console.debug('template applied');
+
+
+  // save to final .html file
+  try {
+    fs.writeFileSync('public/' + 'tmp/' + 'index.html', finalRender);
+    // file written successfully
+    console.debug('HTML file written')
+  } catch (err) {
+    console.error(err);
+  }
+  
+}
+
+
 /**
  * Generates a blog post page from a markdown file.
  * The MD file must begin with a JSON listing of the post's meta-data
+ * RETURNS: Post meta-data
  **/
 function generatePostFromMd(filePathIn, filePathOut) {
 
@@ -161,6 +194,9 @@ function generatePostFromMd(filePathIn, filePathOut) {
   // EXTRACT META-DATA FROM POST
   var splitFileData = file_data.split('<!--# START POST #-->');
   var post = JSON.parse(splitFileData[0]);
+  if (post.dateEdited) { post.dateEdited = new Date(post.dateEdited); }
+  post.datePosted = new Date(post.datePosted);
+  post._short_date = post.datePosted.toLocaleString('default', { month: 'short', year: 'numeric'});
   console.debug('metadata extracted');
   if (post.published == false) {console.log('post not published, skipping'); return 7;}
   check_post_fields(post, filePathIn);  // send warnings if fields are missing

@@ -34,7 +34,10 @@
           {% if post.datePosted or post.tags %}
 	        <ul>
 	          {% if post.datePosted %}
-	            <li><time datetime="2022-10-26">{{ post.datePosted }}</time></li>
+	            <li><time datetime="{{ post.datePosted.getFullYear().toString() + '-' + post.datePosted.getMonth() + '-' + post.datePosted.getDate().toString() }}">Posted: {{ post.datePosted.toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric'}) }}</time></li>
+	          {% endif %}
+	          {% if (post.dateEdited.getTime() !== post.datePosted.getTime()) %}
+	          	<li><em><time datetime="{{ post.dateEdited.getFullYear().toString() + '-' + post.dateEdited.getMonth() + '-' + post.dateEdited.getDate().toString() }}">Edited: {{ post.dateEdited.toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric'}) }}</time></em></li>
 	          {% endif %}
 	          {% if post.tags %}
 	          	<li>

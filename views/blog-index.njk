@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">
+    <meta name="description" content="Website and Dev Blog of Cole Manning">
+
+    <title>Blog | RVRX</title>
+
+    <link rel="canonical" href="https://www.rvrx.dev/blog/">
+    <link href="/listing.css" rel="stylesheet">
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>body {background-image: url("/img/background-blog-new.png")}</style>
+
+    <!-- Prefetch Background images for other pages -->
+    <link rel="prefetch" href="/img/background-candidate-post-2-SfW-80.jpg"> <!-- Post -->
+</head>
+{% include "gtag.njk" %}
+<body>
+{% include "sidebar.njk" %}
+<div id="main" style="overflow: hidden;">
+    {% for post in posts %}
+        <div class="post">
+            <a href="{{ post._path.slice(6) }}"> {# slice off "public" from _path #}
+                {# TODO: Auto-gen colors + transition duration #}
+                <div class="post-container" data-aos="slide-left" style="background-color: {{ ['#7A9CA2', '#887AA2', '#86a27a', '#b5add6', '#f97d6e'] | random }}; transition-duration: {{ 8.108*post.title.length + 378 }}ms;">
+                    <p class="post-title">{{ post.title }}</p>
+                    <p class="post-subtitle">{{ post._short_date }}</p>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+</body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</html>
