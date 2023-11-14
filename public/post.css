@@ -109,3 +109,24 @@ div#post-body h3 a.header-anchor:before {
 div#post-body h4 a.header-anchor:before {
     content: "##";
 }
+
+
+blockquote {
+    padding: 0.15rem 1rem 0.15rem;
+    background-color: #eceff1;
+    border-left: 5px solid #607d8b;
+/*    border-radius: .5rem;*/
+    margin: 1rem 0;
+    position: relative;
+}
+
+blockquote.is-danger {
+    background-color: rgb(63, 0, 9);
+    border-color: rgb(128, 24, 24);
+    color: rgb(229, 83, 83);
+}
+
+blockquote.is-danger code:not([class^="language-"]) {
+  background-color: rgb(53, 0, 8);
+  color: rgb(189, 46, 46);
+}
