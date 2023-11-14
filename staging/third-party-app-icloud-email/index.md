@@ -1,10 +1,10 @@
 {
-  "title": "Using a 3rd Party Email Client with iCloud+ Custom Domain",
+  "title": "3rd Party Email Client w/ iCloud Custom Email Domain",
   "subtitle": "",
   "desc": "How to add iCloud custom email domain to third party email client like Thunderbird",
   "published": true,
-  "dateEdited": 1690862400000,
-  "datePosted": 1690862400000,
+  "dateEdited": 1693540800000,
+  "datePosted": 1693540800000,
   "tags": [ "guide" ]
 }
 <!--# START POST #-->

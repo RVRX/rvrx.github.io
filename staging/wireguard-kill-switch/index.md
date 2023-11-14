@@ -3,8 +3,8 @@
   "subtitle": "How to set up a killswitch for WireGuard when you have multiple LAN subnets",
   "desc": "Kill-Switch for WireGuard on Linux with multiple subnets",
   "published": true,
-  "dateEdited": 1690862400000,
-  "datePosted": 1690862400000,
+  "dateEdited": 1685592000000,
+  "datePosted": 1685592000000,
   "tags": [ "guide", "linux", "wireguard" ]
 }
 <!--# START POST #-->
