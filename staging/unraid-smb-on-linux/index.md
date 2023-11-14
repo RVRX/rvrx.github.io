@@ -5,7 +5,7 @@
   "published": true,
   "dateEdited": 1698811200000,
   "datePosted": 1698811200000,
-  "tags": [ "guide", "unraid", "linux" ]
+  "tags": [ "guide", "unraid", "linux", "homelab" ]
 }
 <!--# START POST #-->
 
