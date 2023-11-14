@@ -43,7 +43,7 @@ const md = new MarkdownIt({
     } else if (['mermaid', 'plantuml'].includes(lang)) {
       return `<pre class="codeblock-${lang}"><code>${_.escape(str)}</code></pre>`
     } else {
-      return `<pre class="line-numbers"><code class="language-${lang}">${_.escape(str)}</code></pre>`
+      return `<pre><code class="language-${lang}">${_.escape(str)}</code></pre>`
     }
   }
 })

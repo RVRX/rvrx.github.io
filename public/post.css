@@ -93,3 +93,11 @@ img {
     /*filter: drop-shadow(0 10px 4px #4444dd);*/
     filter: drop-shadow(0 10px 4px rgba(0, 0, 0, 0.5));
 }
+
+code:not(code[class^="language-"]) {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+    background: #2d2d2d;
+    color: #ccc;
+}
