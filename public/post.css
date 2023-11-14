@@ -101,3 +101,11 @@ code:not(code[class^="language-"]) {
     background: #2d2d2d;
     color: #ccc;
 }
+
+div#post-body h3 a.header-anchor:before {
+    content: "#";
+}
+
+div#post-body h4 a.header-anchor:before {
+    content: "##";
+}

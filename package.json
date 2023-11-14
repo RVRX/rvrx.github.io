@@ -19,6 +19,7 @@
     "lodash": "4.17.21",
     "markdown-it": "13.0.2",
     "markdown-it-abbr": "1.0.4",
+    "markdown-it-anchor": "^8.6.7",
     "markdown-it-attrs": "4.1.6",
     "markdown-it-decorate": "1.2.2",
     "markdown-it-emoji": "2.0.2",

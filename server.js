@@ -18,6 +18,7 @@ import mdMark from 'markdown-it-mark'
 import mdMultiTable from 'markdown-it-multimd-table'
 import mdFootnote from 'markdown-it-footnote'
 import mdImsize from 'markdown-it-imsize'
+import mdAnchor from 'markdown-it-anchor'
 import katex from 'katex'
 import underline from 'markdown-it-underline'
 import 'katex/dist/contrib/mhchem.js' // TODO: added .js, as node wasn't finding it otherwise?
@@ -62,6 +63,7 @@ const md = new MarkdownIt({
   .use(mdMark)
   .use(mdFootnote)
   .use(mdImsize)
+  .use(mdAnchor, {permalink: mdAnchor.permalink.linkInsideHeader({ placement: 'before' })})
 
 
 // Prism (Syntax Highlighting)
