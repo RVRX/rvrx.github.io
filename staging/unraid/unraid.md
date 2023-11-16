@@ -1,11 +1,12 @@
 {
-  "title": "NAS Homelab - 6 Months 'In'",
-  "subtitle": "",
+  "title": "Starting a NAS Homelab",
+  "subtitle": "NAS Homelab - 6 Months 'In'",
   "desc": "The start of my journey creating an Unraid NAS",
   "published": true,
   "dateEdited": 1666756800000,
   "datePosted": 1666756800000,
-  "tags": [ "unraid", "homelab" ]
+  "tags": [ "unraid", "homelab" ],
+  "color": "#f97d6e"
 }
 <!--# START POST #-->
 

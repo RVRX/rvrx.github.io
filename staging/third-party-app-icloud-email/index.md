@@ -5,7 +5,8 @@
   "published": true,
   "dateEdited": 1693540800000,
   "datePosted": 1693540800000,
-  "tags": [ "guide" ]
+  "tags": [ "guide" ],
+  "color": "#887AA2"
 }
 <!--# START POST #-->
 

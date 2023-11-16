@@ -5,7 +5,8 @@
   "published": true,
   "dateEdited": 1685592000000,
   "datePosted": 1685592000000,
-  "tags": [ "guide", "linux", "wireguard" ]
+  "tags": [ "guide", "linux", "wireguard" ],
+  "color": "#86a27a"
 }
 <!--# START POST #-->
 

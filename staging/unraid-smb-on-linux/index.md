@@ -5,7 +5,8 @@
   "published": true,
   "dateEdited": 1698811200000,
   "datePosted": 1698811200000,
-  "tags": [ "guide", "unraid", "linux", "homelab" ]
+  "tags": [ "guide", "unraid", "linux", "homelab" ],
+  "color": "#7A9CA2"
 }
 <!--# START POST #-->
 

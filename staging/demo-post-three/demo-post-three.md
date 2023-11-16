@@ -5,7 +5,8 @@
   "published": true,
   "dateEdited": 2399708131979,
   "datePosted": 2399708131979,
-  "tags": [ "tag1", "tag3" ]
+  "tags": [ "tag1", "tag3" ],
+  "color": "red"
 }
 <!--# START POST #-->
 

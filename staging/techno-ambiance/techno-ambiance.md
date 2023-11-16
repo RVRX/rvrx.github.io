@@ -5,7 +5,8 @@
   "published": true,
   "dateEdited": 1675227600000,
   "datePosted": 1675227600000,
-  "tags": [ "VJ" ]
+  "tags": [ "VJ" ],
+  "color": "#b5add6"
 }
 <!--# START POST #-->
 
