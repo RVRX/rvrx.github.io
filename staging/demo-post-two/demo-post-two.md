@@ -2,7 +2,7 @@
   "title": "Demo 2",
   "subtitle": "demo 2 subtitle",
   "desc": "demo 2Dynamic DNS to resolve the server IP reliably from outside the network",
-  "published": true,
+  "published": false,
   "dateEdited": 1699708131979,
   "datePosted": 1699708131979,
   "tags": [ "tag1", "tag3" ]
