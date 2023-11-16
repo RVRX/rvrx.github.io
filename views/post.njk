@@ -24,9 +24,18 @@
 {% include "gtag.njk" %}
 <body>
 {% include "sidebar.njk" %}
+<style type="text/css">
+	#post-body a, #post-metadata a {
+		color: {{ post.color }} !important;
+	}
+
+	#sidebar a.current-page {
+		color: {{ post.color }} !important;
+	}
+</style>
 <div id="main">
     <div class="post">
-        <h1>{{ post.title }}</h1>
+        <h1 style="background-color: {{ post.color }}">{{ post.title }}</h1>
         <div id="post-metadata">
           {% if post.subtitle %}
           	<h2 class="subtitle">{{ post.subtitle }}</h2>
