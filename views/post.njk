@@ -26,11 +26,23 @@
 {% include "sidebar.njk" %}
 <style type="text/css">
 	#post-body a, #post-metadata a {
-		color: {{ post.color }} !important;
+		color: {{ post.color }};
 	}
 
 	#sidebar a.current-page {
-		color: {{ post.color }} !important;
+		color: {{ post.color }};
+	}
+
+	#post-body a:hover, #post-metadata a:hover {
+		color: {{ post.color }}AA !important;
+	}
+
+	#sidebar a.current-page:hover {
+		color: {{ post.color }}AA !important;
+	}
+
+	body {
+		background-color: {{post.color}}9F;
 	}
 </style>
 <div id="main">
