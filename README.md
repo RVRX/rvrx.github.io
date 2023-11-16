@@ -22,4 +22,4 @@ For a while I was using my personal WikiJS wiki to write my blogs, then copy and
 https://mozilla.github.io/nunjucks/templating.html
 https://nodejs.org/en/learn/manipulating-files/working-with-folders-in-nodejs
 https://markdown-it.github.io/markdown-it/
-
+python3 -m http.server 8080
