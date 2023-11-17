@@ -182,7 +182,22 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
 }
 
 
-function createPostObjectFromFile(fileContents, metaDataOnly) {
+/**
+ * Creates a 'post' object from an input file contents
+ * @param fileContents :string - of a file as string
+ * @param metaDataOnly :boolean - true will remove post.rawMarkdown property
+ * @returns {post}:
+ *      "title": "post title" (string),
+ *      "subtitle": "post subtitle" (string),
+ *      "desc": "SEO description" (string),
+ *      "published": ready for publication? (boolean),
+ *      "dateEdited": dateEdited (Date object), [OPTIONAL]
+ *      "datePosted": dateEdited (Date object)
+ *      "tags": [tag1, tag2, ...]
+ * NO Guarantees are made on the correctness or existence of any fields!
+ * Values will be checked and warnings will be printed if absent, but that is all.
+ */
+function createPostObjectFromFile(fileContents, metaDataOnly = false) {
 
   var post; // what we will return
 
@@ -214,14 +229,13 @@ function createPostObjectFromFile(fileContents, metaDataOnly) {
 }
 
 /**
- * Generates a blog post page from a markdown file.
- * The MD file must begin with a JSON listing of the post's meta-data
+ * Writes an HTML post to file.
+ * Uses nunjucks template "views/post.njk"
  *
- * postFolder - ex: "my-blog-post/". This will output the file at PUBLIC_DIR/BLOG_DIR/my-blog-post/index.html
- * filePathIn - ex: "staging/my-blog-post/something.md"
- *
- * RETURNS: Post meta-data
- **/
+ * @param filePathIn ex: "staging/my-blog-post/something.md"
+ * @param postFolder ex: "my-blog-post/". This will output the file at PUBLIC_DIR/BLOG_DIR/my-blog-post/index.html
+ * @returns {post|number} post object see createPostObjectFromFile()  |OR|  1 if read error
+ */
 function generatePostFromMd(filePathIn, postFolder) {
 
   // const post = {
@@ -293,7 +307,7 @@ function generatePostFromMd(filePathIn, postFolder) {
 
   console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
   post.body = null;
-  post._path = "/" + process.env.BLOG_DIR + postFolder;
+  post._path = "/" + process.env.BLOG_DIR + postFolder;  // destination path for the post
   return post;
 }
 
