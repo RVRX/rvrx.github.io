@@ -107,6 +107,18 @@ for (var i = stagedPosts.length - 1; i >= 0; i--) {
 
 }
 
+// potential future main thread
+/*
+ * for each item in "staging/" {
+ *   post = createPostObjectFromFile2();
+ *   writePost(post);
+ * } posts[];
+ *
+ *  writeTagPages(posts[])
+ *  writeBlogIndex(posts[])
+ *
+ */
+
 // generate tag pages (based off only the pages that have tags), TODO, use allPosts and Nunjucks.reject(page.tag === null)
 generateTagPagesFromPageMetaData(allPostsWithTags);
 
