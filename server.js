@@ -3,6 +3,9 @@ import _ from 'lodash'
 // File IO
 import fs  from 'fs';
 
+// dotenv
+import 'dotenv/config'
+
 
 // Markdown-it
 import MarkdownIt from 'markdown-it'
@@ -70,7 +73,7 @@ const md = new MarkdownIt({
 import Prism from 'prismjs'
 
 
-const blogDir = 'public/tmp/'
+const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
 
 
 // search for posts in staging directory
@@ -97,7 +100,7 @@ var allPostsWithTags = [];
 var allPosts = [];
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
   const postStagedPath = stagingPath + stagedPosts[i];  // public/[staging]/*/*.md
-  const postPublishedPath = blogDir + stagedPosts[i].substring(0, stagedPosts[i].lastIndexOf("/")) + '/';  // public/[blog]/*/*.html --> ../[blog]/*/
+  const postPublishedPath = stagedPosts[i].substring(0, stagedPosts[i].lastIndexOf("/")) + '/';  // public/[blog]/*/*.html --> ../[blog]/*/
   console.log("postPublishedPath");
   console.log(postPublishedPath);
   const ret = generatePostFromMd(postStagedPath, postPublishedPath);
@@ -136,7 +139,7 @@ function generateTagPagesFromPageMetaData(pageMetaDataArray) {
   nunjucks.configure('views', { autoescape: false });
   for (var i = uniqueTags.length - 1; i >= 0; i--) {
     const uniqueTag = uniqueTags[i];
-    var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray });
+    var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray, blogPath: process.env.BLOG_DIR.toString() });
 
     // save to final .html file
     try {
@@ -188,9 +191,13 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
 /**
  * Generates a blog post page from a markdown file.
  * The MD file must begin with a JSON listing of the post's meta-data
+ *
+ * postFolder - ex: "my-blog-post/". This will output the file at PUBLIC_DIR/BLOG_DIR/my-blog-post/index.html
+ * filePathIn - ex: "staging/my-blog-post/something.md"
+ *
  * RETURNS: Post meta-data
  **/
-function generatePostFromMd(filePathIn, directoryOut) {
+function generatePostFromMd(filePathIn, postFolder) {
 
   // const post = {
   //   "title": "post title",
@@ -202,7 +209,7 @@ function generatePostFromMd(filePathIn, directoryOut) {
   //   "tags": [tag1, tag2, ...]
   // }
 
-  console.log("\nGENERATING POST: " + filePathIn + " ---> " + directoryOut);
+  console.log("\nGENERATING POST: " + filePathIn + " ---> " + blogDir + postFolder);
 
 
   var file_data;
@@ -221,7 +228,7 @@ function generatePostFromMd(filePathIn, directoryOut) {
   post.datePosted = new Date(post.datePosted);
   post._short_date = post.datePosted.toLocaleString('default', { month: 'short', year: 'numeric'});
   console.debug('metadata extracted');
-  if (post.published == false) {console.log('post not published, skipping'); return 7;}
+  if (post.published === false) {console.log('post not published, skipping'); return 7;}
   check_post_fields(post, filePathIn);  // send warnings if fields are missing
 
   // Extract Markdown
@@ -239,26 +246,26 @@ function generatePostFromMd(filePathIn, directoryOut) {
   try {
     
     //mkdir
-    fs.mkdirSync(directoryOut, { recursive: true }, (err) => {
+    fs.mkdirSync(blogDir + postFolder, { recursive: true }, (err) => {
       if (err) throw err;
     })
 
-    fs.writeFileSync(directoryOut + 'index.html', finalRender);
+    fs.writeFileSync(blogDir + postFolder + 'index.html', finalRender);
     // file written successfully
     console.debug('HTML file written')
 
     // copy all other assets over
-    // all items in filePathin, except the .md, should be copied over to directoryOut
+    // all items in filePathin, except the .md, should be copied over to postFolder
     console.log("filePathIn: "+ filePathIn);
-    console.log("directoryOut: "+ directoryOut);
+    console.log("postFolder: "+ blogDir + postFolder);
     const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
     var postAssets = fs.readdirSync(directoryIn).filter((asset) => !asset.endsWith('.md'));
     process.stdout.write('postAssets');
     console.log(postAssets);
     for (var i = postAssets.length - 1; i >= 0; i--) {
       postAssets[i];
-      fs.copyFileSync(directoryIn + postAssets[i], directoryOut + postAssets[i]);
-      console.log("copy: '" + directoryIn + postAssets[i] + "'' to '" + directoryOut + postAssets[i] + "'");
+      fs.copyFileSync(directoryIn + postAssets[i], blogDir + postFolder + postAssets[i]);
+      console.log("copy: '" + directoryIn + postAssets[i] + "'' to '" + blogDir + postFolder + postAssets[i] + "'");
     }
     
 
@@ -270,7 +277,7 @@ function generatePostFromMd(filePathIn, directoryOut) {
 
   console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
   post.body = null;
-  post._path = directoryOut;
+  post._path = "/" + process.env.BLOG_DIR + postFolder;
   return post;
 }
 

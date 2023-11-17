@@ -23,7 +23,7 @@
 <div id="main" style="overflow: hidden;">
     {% for post in posts %}
         <div class="post">
-            <a href="{{ post._path.slice(6) }}"> {# slice off "public" from _path #}
+            <a href="{{ post._path }}"> {# slice off "public" from _path #}
                 {# TODO: Auto-gen colors + transition duration #}
                 <div class="post-container" data-aos="slide-left" 
                 style="

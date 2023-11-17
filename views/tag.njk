@@ -22,7 +22,7 @@
 			{% for post in posts -%}
 				{%- for postTag in post.tags -%}
 					{%- if postTag === tagName -%}
-						<li><a href="{{ post._path.slice(6) }}">{{ post.title }}</a></li>
+						<li><a href="{{ post._path }}">{{ post.title }}</a></li>
 					{%- endif -%}
 				{%- endfor -%}
 			{%- endfor %}
