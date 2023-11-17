@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 // File IO
-import fs  from 'fs';
+import fs from 'fs';
 
 // dotenv
 import 'dotenv/config'
@@ -22,17 +22,15 @@ import mdMultiTable from 'markdown-it-multimd-table'
 import mdFootnote from 'markdown-it-footnote'
 import mdImsize from 'markdown-it-imsize'
 import mdAnchor from 'markdown-it-anchor'
-import katex from 'katex'
 import underline from 'markdown-it-underline'
 import 'katex/dist/contrib/mhchem.js' // TODO: added .js, as node wasn't finding it otherwise?
-import twemoji from 'twemoji'
 import plantuml from 'plantuml' // TODO: was from './markdown/plantuml'
-
 //Nunjucks (Template Engine)
 import nunjucks from 'nunjucks'
 
 // Mermaid
 import mermaid from 'mermaid'
+// Prism (Syntax Highlighting)
 
 
 // markdown-it Config [[ NOTE: Copied from Wiki.JS setup ]]
@@ -67,10 +65,6 @@ const md = new MarkdownIt({
   .use(mdFootnote)
   .use(mdImsize)
   .use(mdAnchor, {permalink: mdAnchor.permalink.linkInsideHeader({ placement: 'before' })})
-
-
-// Prism (Syntax Highlighting)
-import Prism from 'prismjs'
 
 
 const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
@@ -188,6 +182,37 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
 }
 
 
+function createPostObjectFromFile(fileContents, metaDataOnly) {
+
+  var post; // what we will return
+
+
+  if (metaDataOnly) { // EXTRACT only META-DATA FROM POST
+    post = JSON.parse(fileContents.split('<!--# START POST #-->')[0]);
+
+  } else { // EXTRACT META-DATA FROM POST and MARKDOWN
+    var fileContentsBySection;
+    fileContentsBySection = fileContents.split('<!--# START POST #-->');
+    post = JSON.parse(fileContentsBySection[0])
+    post.rawMarkdown = fileContentsBySection.slice(1).join('');  // cut off the first section and join the rest into one, this is the remaining section.
+  }
+
+  // convert post date string into Date object
+  post.datePosted = new Date(post.datePosted);
+  // if there is an edited date, convert it as well
+  if (post.dateEdited) {
+    post.dateEdited = new Date(post.dateEdited);
+  }
+
+  // define shorter plaintext date in format: "Mon #"
+  post._short_date = post.datePosted.toLocaleString('default', {month: 'short', year: 'numeric'});
+
+
+  check_post_fields(post);  // send warnings if fields are missing
+
+  return post;
+}
+
 /**
  * Generates a blog post page from a markdown file.
  * The MD file must begin with a JSON listing of the post's meta-data
@@ -212,33 +237,24 @@ function generatePostFromMd(filePathIn, postFolder) {
   console.log("\nGENERATING POST: " + filePathIn + " ---> " + blogDir + postFolder);
 
 
-  var file_data;
+  var fileContents;
   try {
-    file_data = fs.readFileSync(filePathIn, 'utf8');
+    fileContents = fs.readFileSync(filePathIn, 'utf8');
     console.debug('file read');
   } catch (err) {
     console.error(err);
     return 1;
   }
 
-  // EXTRACT META-DATA FROM POST
-  var splitFileData = file_data.split('<!--# START POST #-->');
-  var post = JSON.parse(splitFileData[0]);
-  if (post.dateEdited) { post.dateEdited = new Date(post.dateEdited); }
-  post.datePosted = new Date(post.datePosted);
-  post._short_date = post.datePosted.toLocaleString('default', { month: 'short', year: 'numeric'});
-  console.debug('metadata extracted');
-  if (post.published === false) {console.log('post not published, skipping'); return 7;}
-  check_post_fields(post, filePathIn);  // send warnings if fields are missing
 
-  // Extract Markdown
-  var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
-  post.body = postHTMLBody;
-  console.debug('markdown extracted');
+  var post = createPostObjectFromFile(fileContents);
+  console.debug('data extracted');
+  if (post.published === false) {console.log('post not published, skipping'); return 7;}
 
   // apply input to template
   nunjucks.configure('views', { autoescape: false });
-  var finalRender = nunjucks.render('post.njk', { post: post });
+  var finalRender = nunjucks.render('post.njk', { post: post, body: md.render(post.rawMarkdown) });
+  post.rawMarkdown = null;  // remove bloat
   console.debug('template applied');
 
 
@@ -286,14 +302,14 @@ function generatePostFromMd(filePathIn, postFolder) {
  * Check for missing fields in a post object
  * TODO: could be moved into an object function
  **/
-function check_post_fields(post, filePathIn) {
-  if (!post.title) {console_warn("MISSING title (" + filePathIn + ")");}
-  if (!post.subtitle) {console_warn("MISSING subtitle (" + filePathIn + ")");}
-  if (!post.desc) {console_warn("MISSING desc (" + filePathIn + ")");}
-  if (!post.published) {console_warn("MISSING published (" + filePathIn + ")");}
-  // if (!post.dateEdited) {console_warn("MISSING dateEdited (" + filePathIn + ")");}
-  if (!post.datePosted) {console_warn("MISSING datePosted (" + filePathIn + ")");}
-  if (!post.tags) {console_warn("MISSING tags (" + filePathIn + ")");}
+function check_post_fields(post) {
+  if (!post.title) {console_warn("MISSING title");}
+  if (!post.subtitle) {console_warn("MISSING subtitle");}
+  if (!post.desc) {console_warn("MISSING desc");}
+  if (!post.published) {console_warn("MISSING published");}
+  // if (!post.dateEdited) {console_warn("MISSING dateEdited");}
+  if (!post.datePosted) {console_warn("MISSING datePosted");}
+  if (!post.tags) {console_warn("MISSING tags");}
 }
 
 function console_warn(argument) {
