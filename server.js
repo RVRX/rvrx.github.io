@@ -77,7 +77,7 @@ class Post {
   constructor(postPath) {
     this.postPath = path.resolve(postPath);
     this.containingDir = path.dirname(this.postPath);
-    const foobar = createPostObjectFromFile(this.getFileContents(postPath), true);
+    const foobar = parseRawPostContents(this.getFileContents(postPath), true);
     Object.assign(this, foobar);
   }
 
@@ -272,30 +272,15 @@ function createTagPages() {
 /**
  * Generate Blog Homepage
  **/
-generateBlogIndexFromPageMetaData(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
+generateBlogIndexFromPosts(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
 
 
-// potential future main thread
-/*
- * for each item in "staging/" {
- *   post = createPostObjectFromFile2();
- *   writePost(post);
- * } posts[];
- *
- *  writeTagPages(posts[])
- *  writeBlogIndex(posts[])
- *
- */
+function generateBlogIndexFromPosts(postList) {
+  console.log("generateBlogIndexFromPosts:");
 
-function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
-  console.log("generateBlogIndexFromPageMetaData:")
-  // console.log(pageMetaDataArray);
-
-  // for each post
-  // fill template
-  // apply input to template
+  // Render Template
   nunjucks.configure('views', { autoescape: false });
-  var finalRender = nunjucks.render('blog-index.njk', { posts: pageMetaDataArray });
+  var finalRender = nunjucks.render('blog-index.njk', { posts: postList });
   console.debug('template applied');
 
 
@@ -305,13 +290,14 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
     // file written successfully
     console.debug('HTML file written')
   } catch (err) {
+    console_warn('failed to generate blog index!');
     console.error(err);
   }
   
 }
 
 
-/**
+/** TODO: Comment Signature outdated
  * Creates a 'post' object from an input file contents
  * @param fileContents :string - of a file as string
  * @param metaDataOnly :boolean - true will remove post.rawMarkdown property
@@ -326,7 +312,7 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
  * NO Guarantees are made on the correctness or existence of any fields!
  * Values will be checked and warnings will be printed if absent, but that is all.
  */
-function createPostObjectFromFile(fileContents, metaDataOnly = false) {
+function parseRawPostContents(fileContents, metaDataOnly = false) {
 
   var post; // what we will return
 
