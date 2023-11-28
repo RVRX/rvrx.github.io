@@ -78,6 +78,10 @@ class Post {
     this.postPath = path.resolve(postPath);
     this.containingDir = path.dirname(this.postPath);
     Object.assign(this, parseRawPostContents(this.getPostContentsFromDisk(postPath), true));
+    this.datePosted = new Date(this.datePosted);  // convert post date string into Date object
+    this.dateEdited = this.dateEdited ? new Date(this.dateEdited) : this.datePosted;
+    this._short_date = this.datePosted.toLocaleString('default', {month: 'short', year: 'numeric'});  // define shorter plaintext date in format: "Mon #"
+    this.tags = this.tags ? this.tags : [];
   }
 
 
@@ -153,14 +157,16 @@ console.log(stagedPosts);
 
 // convert to actual posts
 stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
-// console.log(stagedPosts);
+
+// filter out unpublished posts
+stagedPosts = stagedPosts.filter((post) => post.published);
 
 
 // publish all posts
 stagedPosts.forEach((post) => publishPost(post));
 
 // create tag pages
-createTagPages();
+createTagPages(stagedPosts);
 
 /**
  * Copies post and its 'assets' to the out directory
@@ -203,11 +209,12 @@ function publishPost(aPost) {
 /**
  * create tag-pages
  **/
-function createTagPages() {
+function createTagPages(stagedPosts) {
   // get all unique tags
   var tags = stagedPosts.map((x) => x.tags); // posts -> tags conversion
   tags = [].concat(...tags);  // 2D to 1D array conversion
   tags = [...new Set(tags)];  // strip duplicates
+  // remove undefined tags
   console.log(tags);
 
 
@@ -234,32 +241,6 @@ function createTagPages() {
       // TODO: Handle error
     }
   });
-
-  // for each tag, build a page
-  // nunjucks.configure('views', { autoescape: false });
-  // for (var i = tags.length - 1; i >= 0; i--) {
-  //   const uniqueTag = tags[i];
-  //   var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray, blogPath: process.env.BLOG_DIR.toString() });
-
-  //   // save to final .html file
-  //   try {
-  //     // create dirs
-  //     const tagDir = blogDir + 'tags/' + uniqueTag;
-  //     if (!fs.existsSync(tagDir)){
-  //         fs.mkdirSync(tagDir, { recursive: true }, (err) => {
-  //           if (err) throw err;
-  //         })
-
-  //     }
-  //     const tagFilePath = tagDir + '/index.html';
-  //     fs.writeFileSync(tagFilePath, finalRender);
-  //     // file written successfully
-  //     console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
-  //   } catch (err) {
-  //     console.error(err);
-  //     // TODO: Handle error
-  //   }
-  // }
 }
 
 
@@ -269,6 +250,8 @@ function createTagPages() {
  * Generate Blog Homepage
  **/
 generateBlogIndexFromPosts(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
+
+console.log(stagedPosts);
 
 
 function generateBlogIndexFromPosts(postList) {
@@ -282,7 +265,7 @@ function generateBlogIndexFromPosts(postList) {
 
   // save to final .html file
   try {
-    fs.writeFileSync(blogDir + 'index.html', finalRender);
+    fs.writeFileSync(path.join(BLOG_DIR, '/index.html'), finalRender);
     // file written successfully
     console.debug('HTML file written')
   } catch (err) {
@@ -323,17 +306,6 @@ function parseRawPostContents(fileContents, metaDataOnly = false) {
     post.rawMarkdown = fileContentsBySection.slice(1).join('');  // cut off the first section and join the rest into one, this is the remaining section.
   }
 
-  // convert post date string into Date object
-  post.datePosted = new Date(post.datePosted);
-  // if there is an edited date, convert it as well
-  if (post.dateEdited) {
-    post.dateEdited = new Date(post.dateEdited);
-  }
-
-  // define shorter plaintext date in format: "Mon #"
-  post._short_date = post.datePosted.toLocaleString('default', {month: 'short', year: 'numeric'});
-
-
   check_post_fields(post);  // send warnings if fields are missing
 
   return post;
@@ -345,19 +317,12 @@ function parseRawPostContents(fileContents, metaDataOnly = false) {
  **/
 function check_post_fields(post) {
   if (!post.title) {console_warn("MISSING title");}
-  if (!post.subtitle) {console_warn("MISSING subtitle");}
+  if (!post.subtitle) {console_warn("MISSING subtitle for " + post.title);}
   if (!post.desc) {console_warn("MISSING desc");}
-  if (!post.published) {console_warn("MISSING published");}
-  // if (!post.dateEdited) {console_warn("MISSING dateEdited");}
+  if (typeof post.published == 'undefined') {console_warn("MISSING published for " + post.title);}
   if (!post.datePosted) {console_warn("MISSING datePosted");}
-  if (!post.tags) {console_warn("MISSING tags");}
 }
 
 function console_warn(argument) {
   console.warn("\x1b[33m" + argument + "\x1b[0m");
 }
-
-
-
-
-
