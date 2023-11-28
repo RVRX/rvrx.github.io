@@ -72,37 +72,6 @@ const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
 const PUBLIC_DIR = process.env.PUBLIC_DIR;
 const BLOG_DIR = path.join(PUBLIC_DIR, process.env.BLOG_DIR);
 
-
-
-
-console.log("BLOG_DIR:");
-console.log(BLOG_DIR);
-
-
-// search for posts in staging directory
-const stagingPath = 'staging/';
-// const stagingpath2 = path.resolve('staging');
-// console.log('stagingpath2:');
-// console.log(stagingpath2);
-var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
-// var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
-for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  console.debug(stagedPosts[i]);
-  var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
-  // get md name
-  const isMarkdownFile = (element) => element.endsWith(".md");
-  var markdownFileIndex = aPostAndItsAssets.findIndex(isMarkdownFile);
-  if (markdownFileIndex === -1) {
-    console.error('Markdown file not found in staging directory, skipping');
-    console_warn('Markdown file not found in staging directory, skipping');
-    exit(1);
-  }
-  stagedPosts[i] = stagedPosts[i] + '/' + aPostAndItsAssets[markdownFileIndex];
-}
-console.log('stagedPosts');
-console.log(stagedPosts);
-
-
 // Post class definition
 class Post {
   constructor(postPath) {
@@ -125,7 +94,7 @@ class Post {
     // apply Nunjucks template to markdown
     nunjucks.configure('views', { autoescape: false });
     var finalRender = nunjucks.render('post.njk', { post: this, body: md.render(this.bodyMD) });
-    console.debug('bodyHTML generated');
+    // console.debug('bodyHTML generated');
     return finalRender;
   }
 
@@ -150,11 +119,6 @@ class Post {
   }
 
   //method
-  getTags() {
-    return 1;
-  }
-
-  //method
   getFileContents(filePathIn) {
     var fileContents;
     try {
@@ -169,23 +133,48 @@ class Post {
 
 
 
-// convert to actual posts
-stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
+
+// search for posts in staging directory
+const stagingPath = 'staging/';
+var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+// var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
+for (var i = stagedPosts.length - 1; i >= 0; i--) {
+  var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
+  // get md name
+  const isMarkdownFile = (element) => element.endsWith(".md");
+  var markdownFileIndex = aPostAndItsAssets.findIndex(isMarkdownFile);
+  if (markdownFileIndex === -1) {
+    console.error('Markdown file not found in staging directory, skipping');
+    console_warn('Markdown file not found in staging directory, skipping');
+    exit(1);
+  }
+  stagedPosts[i] = stagedPosts[i] + '/' + aPostAndItsAssets[markdownFileIndex];
+}
+console.log('stagedPosts:');
 console.log(stagedPosts);
 
-console.log('postFolder testststststs');
-console.log(stagedPosts[0].parentDir);
 
 
-console.log('published dir test:');
-console.log(stagedPosts[0].publishingDir);
+// convert to actual posts
+stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
+// console.log(stagedPosts);
+
+
+// publish all posts
+stagedPosts.forEach((post) => publishPost(post));
+
+// create tag pages
+createTagPages();
 
 /**
  * Copies post and its 'assets' to the out directory
  **/
 function publishPost(aPost) {
+
+  process.stdout.write('GENERATING POST: ' + aPost.title + ' ... ');
+
   try {
-    
+
     // create this post's publishing directory if it doesnt exist
     fs.mkdirSync(aPost.publishingDir, { recursive: true }, (err) => {
       if (err) throw err;
@@ -193,7 +182,6 @@ function publishPost(aPost) {
 
     // create index.html
     fs.writeFileSync(path.join(aPost.publishingDir + '/index.html'), aPost.bodyHTML);
-    console.debug('HTML file written');
 
     // copy all other assets over
     // all items in filePathin, except the .md, should be copied over to postFolder
@@ -202,20 +190,19 @@ function publishPost(aPost) {
     // const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
     var postAssets = fs.readdirSync(aPost.containingDir).filter((asset) => !asset.endsWith('.md'));
     postAssets = postAssets.map((x) => '/' + x); // add forward slash to start
-    process.stdout.write('postAssets');
-    console.log(postAssets);
+    // console.log(postAssets);
     for (var i = postAssets.length - 1; i >= 0; i--) {
       postAssets[i];
       fs.copyFileSync(path.join(aPost.containingDir + postAssets[i]), aPost.publishingDir + postAssets[i]);
-      console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
+      // console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
     }
+
+    console.log("DONE!")
   } catch (err) {
+    console_warn("ERROR!");
     console.error(err);
   }
 }
-
-publishPost(stagedPosts[0])
-
 
 /**
  * create tag-pages
@@ -279,7 +266,7 @@ function createTagPages() {
   // }
 }
 
-createTagPages();
+
 
 
 /**
@@ -287,7 +274,6 @@ createTagPages();
  **/
 generateBlogIndexFromPageMetaData(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
 
-process.exit();
 
 // potential future main thread
 /*
@@ -303,7 +289,7 @@ process.exit();
 
 function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
   console.log("generateBlogIndexFromPageMetaData:")
-  console.log(pageMetaDataArray);
+  // console.log(pageMetaDataArray);
 
   // for each post
   // fill template
