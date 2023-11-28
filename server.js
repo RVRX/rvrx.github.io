@@ -113,9 +113,9 @@ class Post {
     return path.join(BLOG_DIR + this.parentDir);
   }
 
-  //getter
+  //getter (relative path for tag pages)
   get _path() {
-    return path.join(this.parentDir);
+    return path.join('/', process.env.BLOG_DIR, this.parentDir);
   }
 
   //method
