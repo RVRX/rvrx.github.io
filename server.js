@@ -1,7 +1,11 @@
 import _ from 'lodash'
 
 // File IO
-import fs  from 'fs';
+import fs from 'fs';
+import path from 'node:path';
+
+// dotenv
+import 'dotenv/config'
 
 
 // Markdown-it
@@ -19,17 +23,15 @@ import mdMultiTable from 'markdown-it-multimd-table'
 import mdFootnote from 'markdown-it-footnote'
 import mdImsize from 'markdown-it-imsize'
 import mdAnchor from 'markdown-it-anchor'
-import katex from 'katex'
 import underline from 'markdown-it-underline'
 import 'katex/dist/contrib/mhchem.js' // TODO: added .js, as node wasn't finding it otherwise?
-import twemoji from 'twemoji'
 import plantuml from 'plantuml' // TODO: was from './markdown/plantuml'
-
 //Nunjucks (Template Engine)
 import nunjucks from 'nunjucks'
 
 // Mermaid
 import mermaid from 'mermaid'
+// Prism (Syntax Highlighting)
 
 
 // markdown-it Config [[ NOTE: Copied from Wiki.JS setup ]]
@@ -66,18 +68,77 @@ const md = new MarkdownIt({
   .use(mdAnchor, {permalink: mdAnchor.permalink.linkInsideHeader({ placement: 'before' })})
 
 
-// Prism (Syntax Highlighting)
-import Prism from 'prismjs'
+const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
+const PUBLIC_DIR = process.env.PUBLIC_DIR;
+const BLOG_DIR = path.join(PUBLIC_DIR, process.env.BLOG_DIR);
+
+// Post class definition
+class Post {
+  constructor(postPath) {
+    this.postPath = path.resolve(postPath);
+    this.containingDir = path.dirname(this.postPath);
+    const foobar = createPostObjectFromFile(this.getFileContents(postPath), true);
+    Object.assign(this, foobar);
+  }
 
 
-const blogDir = 'public/tmp/'
+  //getter
+  get bodyMD() {
+    var fileContentsBySection;
+    fileContentsBySection = this.getFileContents(this.postPath).split('<!--# START POST #-->');
+    return fileContentsBySection.slice(1).join('');
+  }
+
+  //getter
+  get bodyHTML() {
+    // apply Nunjucks template to markdown
+    nunjucks.configure('views', { autoescape: false });
+    var finalRender = nunjucks.render('post.njk', { post: this, body: md.render(this.bodyMD) });
+    // console.debug('bodyHTML generated');
+    return finalRender;
+  }
+
+  //getter
+  get filename() {
+    return path.basename(this.postPath);
+  }
+
+  //getter
+  get parentDir() {
+    return path.basename(path.dirname(this.postPath));
+  }
+
+  //getter
+  get publishingDir() {
+    return path.join(BLOG_DIR + this.parentDir);
+  }
+
+  //getter
+  get _path() {
+    return path.join(this.parentDir);
+  }
+
+  //method
+  getFileContents(filePathIn) {
+    var fileContents;
+    try {
+      fileContents = fs.readFileSync(filePathIn, 'utf8');
+      return fileContents;
+    } catch (err) {
+      console.error(err);
+      return -1;
+    }
+  }
+}
+
+
 
 
 // search for posts in staging directory
 const stagingPath = 'staging/';
 var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+// var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  console.debug(stagedPosts[i]);
   var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
   // get md name
   const isMarkdownFile = (element) => element.endsWith(".md");
@@ -89,81 +150,146 @@ for (var i = stagedPosts.length - 1; i >= 0; i--) {
   }
   stagedPosts[i] = stagedPosts[i] + '/' + aPostAndItsAssets[markdownFileIndex];
 }
-console.log('stagedPosts');
+console.log('stagedPosts:');
 console.log(stagedPosts);
 
-// for each staged post generate blog HTML, and take note of post tags
-var allPostsWithTags = [];
-var allPosts = [];
-for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  const postStagedPath = stagingPath + stagedPosts[i];  // public/[staging]/*/*.md
-  const postPublishedPath = blogDir + stagedPosts[i].substring(0, stagedPosts[i].lastIndexOf("/")) + '/';  // public/[blog]/*/*.html --> ../[blog]/*/
-  console.log("postPublishedPath");
-  console.log(postPublishedPath);
-  const ret = generatePostFromMd(postStagedPath, postPublishedPath);
-  allPosts[i] = ret;  // TODO: probably only need one post array, should get rid of allPostsWithTags
-  if ((ret !== 7) && (ret.tags)) { // if marked as published & has tags
-    allPostsWithTags[i] = ret;
-    // TODO, copy finished mds to public
-    // ^TODO, compare modified dates of public vs staging md? Only build updated ones? Ask before overwrite?
-  }
 
+
+// convert to actual posts
+stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
+// console.log(stagedPosts);
+
+
+// publish all posts
+stagedPosts.forEach((post) => publishPost(post));
+
+// create tag pages
+createTagPages();
+
+/**
+ * Copies post and its 'assets' to the out directory
+ **/
+function publishPost(aPost) {
+
+  process.stdout.write('GENERATING POST: ' + aPost.title + ' ... ');
+
+  try {
+
+    // create this post's publishing directory if it doesnt exist
+    fs.mkdirSync(aPost.publishingDir, { recursive: true }, (err) => {
+      if (err) throw err;
+    })
+
+    // create index.html
+    fs.writeFileSync(path.join(aPost.publishingDir + '/index.html'), aPost.bodyHTML);
+
+    // copy all other assets over
+    // all items in filePathin, except the .md, should be copied over to postFolder
+    // console.log("filePathIn: "+ filePathIn);
+    // console.log("postFolder: "+ aPost.publishingDir);
+    // const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
+    var postAssets = fs.readdirSync(aPost.containingDir).filter((asset) => !asset.endsWith('.md'));
+    postAssets = postAssets.map((x) => '/' + x); // add forward slash to start
+    // console.log(postAssets);
+    for (var i = postAssets.length - 1; i >= 0; i--) {
+      postAssets[i];
+      fs.copyFileSync(path.join(aPost.containingDir + postAssets[i]), aPost.publishingDir + postAssets[i]);
+      // console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
+    }
+
+    console.log("DONE!")
+  } catch (err) {
+    console_warn("ERROR!");
+    console.error(err);
+  }
 }
 
-// generate tag pages (based off only the pages that have tags), TODO, use allPosts and Nunjucks.reject(page.tag === null)
-generateTagPagesFromPageMetaData(allPostsWithTags);
-
-// generate blog homepage (based off all pages [sorted by date])
-generateBlogIndexFromPageMetaData(allPosts.sort((a,b) => b.datePosted - a.datePosted));
-
-
-function generateTagPagesFromPageMetaData(pageMetaDataArray) {
-  // gather unique tags...
-  var uniqueTags = [];
-  // generate tag pages for each post by using the returned meta, data
-  for (var i = allPostsWithTags.length - 1; i >= 0; i--) {  // for each post
-    const page = allPostsWithTags[i];
-    for (var j = page.tags.length - 1; j >= 0; j--) {  // for each tag
-      const tag = page.tags[j];
-      if (!uniqueTags.includes(tag)) {uniqueTags.push(tag)}
-    }
-  }
-
-  console.debug('unique tags: ' + uniqueTags)
+/**
+ * create tag-pages
+ **/
+function createTagPages() {
+  // get all unique tags
+  var tags = stagedPosts.map((x) => x.tags); // posts -> tags conversion
+  tags = [].concat(...tags);  // 2D to 1D array conversion
+  tags = [...new Set(tags)];  // strip duplicates
+  console.log(tags);
 
 
-  // for each tag, build a page
   nunjucks.configure('views', { autoescape: false });
-  for (var i = uniqueTags.length - 1; i >= 0; i--) {
-    const uniqueTag = uniqueTags[i];
-    var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray });
-
-    // save to final .html file
+  tags.forEach((tag) => {
+    // render template
+    var finalRender = nunjucks.render('tag.njk', { tagName: tag, posts: stagedPosts, blogPath: process.env.BLOG_DIR.toString() });
+    // save to file
     try {
       // create dirs
-      const tagDir = blogDir + 'tags/' + uniqueTag;
+      const tagDir = path.join(BLOG_DIR, '/tags/', tag);
       if (!fs.existsSync(tagDir)){
           fs.mkdirSync(tagDir, { recursive: true }, (err) => {
             if (err) throw err;
           })
 
       }
-      const tagFilePath = tagDir + '/index.html';
+      const tagFilePath = path.join(tagDir + '/index.html');
       fs.writeFileSync(tagFilePath, finalRender);
       // file written successfully
-      console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
+      console.log("GENERATING TAG: " + tag + " ---> " + tagFilePath);
     } catch (err) {
       console.error(err);
       // TODO: Handle error
     }
-  }
+  });
+
+  // for each tag, build a page
+  // nunjucks.configure('views', { autoescape: false });
+  // for (var i = tags.length - 1; i >= 0; i--) {
+  //   const uniqueTag = tags[i];
+  //   var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray, blogPath: process.env.BLOG_DIR.toString() });
+
+  //   // save to final .html file
+  //   try {
+  //     // create dirs
+  //     const tagDir = blogDir + 'tags/' + uniqueTag;
+  //     if (!fs.existsSync(tagDir)){
+  //         fs.mkdirSync(tagDir, { recursive: true }, (err) => {
+  //           if (err) throw err;
+  //         })
+
+  //     }
+  //     const tagFilePath = tagDir + '/index.html';
+  //     fs.writeFileSync(tagFilePath, finalRender);
+  //     // file written successfully
+  //     console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
+  //   } catch (err) {
+  //     console.error(err);
+  //     // TODO: Handle error
+  //   }
+  // }
 }
 
 
-// TODO: should be a single function for saving templates. generatePage(*.njk, templateVars[], filePath);
+
+
+/**
+ * Generate Blog Homepage
+ **/
+generateBlogIndexFromPageMetaData(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
+
+
+// potential future main thread
+/*
+ * for each item in "staging/" {
+ *   post = createPostObjectFromFile2();
+ *   writePost(post);
+ * } posts[];
+ *
+ *  writeTagPages(posts[])
+ *  writeBlogIndex(posts[])
+ *
+ */
+
 function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
   console.log("generateBlogIndexFromPageMetaData:")
-  console.log(pageMetaDataArray);
+  // console.log(pageMetaDataArray);
 
   // for each post
   // fill template
@@ -186,107 +312,63 @@ function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
 
 
 /**
- * Generates a blog post page from a markdown file.
- * The MD file must begin with a JSON listing of the post's meta-data
- * RETURNS: Post meta-data
- **/
-function generatePostFromMd(filePathIn, directoryOut) {
+ * Creates a 'post' object from an input file contents
+ * @param fileContents :string - of a file as string
+ * @param metaDataOnly :boolean - true will remove post.rawMarkdown property
+ * @returns {post}:
+ *      "title": "post title" (string),
+ *      "subtitle": "post subtitle" (string),
+ *      "desc": "SEO description" (string),
+ *      "published": ready for publication? (boolean),
+ *      "dateEdited": dateEdited (Date object), [OPTIONAL]
+ *      "datePosted": dateEdited (Date object)
+ *      "tags": [tag1, tag2, ...]
+ * NO Guarantees are made on the correctness or existence of any fields!
+ * Values will be checked and warnings will be printed if absent, but that is all.
+ */
+function createPostObjectFromFile(fileContents, metaDataOnly = false) {
 
-  // const post = {
-  //   "title": "post title",
-  //   "subtitle": "post subtitle",
-  //   "desc": "SEO description",
-  //   "published": false,
-  //   "dateEdited": 0,
-  //   "datePosted": 0,
-  //   "tags": [tag1, tag2, ...]
-  // }
-
-  console.log("\nGENERATING POST: " + filePathIn + " ---> " + directoryOut);
+  var post; // what we will return
 
 
-  var file_data;
-  try {
-    file_data = fs.readFileSync(filePathIn, 'utf8');
-    console.debug('file read');
-  } catch (err) {
-    console.error(err);
-    return 1;
+  if (metaDataOnly) { // EXTRACT only META-DATA FROM POST
+    post = JSON.parse(fileContents.split('<!--# START POST #-->')[0]);
+
+  } else { // EXTRACT META-DATA FROM POST and MARKDOWN
+    var fileContentsBySection;
+    fileContentsBySection = fileContents.split('<!--# START POST #-->');
+    post = JSON.parse(fileContentsBySection[0])
+    post.rawMarkdown = fileContentsBySection.slice(1).join('');  // cut off the first section and join the rest into one, this is the remaining section.
   }
 
-  // EXTRACT META-DATA FROM POST
-  var splitFileData = file_data.split('<!--# START POST #-->');
-  var post = JSON.parse(splitFileData[0]);
-  if (post.dateEdited) { post.dateEdited = new Date(post.dateEdited); }
+  // convert post date string into Date object
   post.datePosted = new Date(post.datePosted);
-  post._short_date = post.datePosted.toLocaleString('default', { month: 'short', year: 'numeric'});
-  console.debug('metadata extracted');
-  if (post.published == false) {console.log('post not published, skipping'); return 7;}
-  check_post_fields(post, filePathIn);  // send warnings if fields are missing
-
-  // Extract Markdown
-  var postHTMLBody = md.render(splitFileData.slice(1).join('')); // slice off metadata section, join all remaining sections
-  post.body = postHTMLBody;
-  console.debug('markdown extracted');
-
-  // apply input to template
-  nunjucks.configure('views', { autoescape: false });
-  var finalRender = nunjucks.render('post.njk', { post: post });
-  console.debug('template applied');
-
-
-  // save to final index.html file
-  try {
-    
-    //mkdir
-    fs.mkdirSync(directoryOut, { recursive: true }, (err) => {
-      if (err) throw err;
-    })
-
-    fs.writeFileSync(directoryOut + 'index.html', finalRender);
-    // file written successfully
-    console.debug('HTML file written')
-
-    // copy all other assets over
-    // all items in filePathin, except the .md, should be copied over to directoryOut
-    console.log("filePathIn: "+ filePathIn);
-    console.log("directoryOut: "+ directoryOut);
-    const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
-    var postAssets = fs.readdirSync(directoryIn).filter((asset) => !asset.endsWith('.md'));
-    process.stdout.write('postAssets');
-    console.log(postAssets);
-    for (var i = postAssets.length - 1; i >= 0; i--) {
-      postAssets[i];
-      fs.copyFileSync(directoryIn + postAssets[i], directoryOut + postAssets[i]);
-      console.log("copy: '" + directoryIn + postAssets[i] + "'' to '" + directoryOut + postAssets[i] + "'");
-    }
-    
-
-
-  } catch (err) {
-    console.error(err);
+  // if there is an edited date, convert it as well
+  if (post.dateEdited) {
+    post.dateEdited = new Date(post.dateEdited);
   }
 
+  // define shorter plaintext date in format: "Mon #"
+  post._short_date = post.datePosted.toLocaleString('default', {month: 'short', year: 'numeric'});
 
-  console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
-  post.body = null;
-  post._path = directoryOut;
+
+  check_post_fields(post);  // send warnings if fields are missing
+
   return post;
 }
-
 
 /**
  * Check for missing fields in a post object
  * TODO: could be moved into an object function
  **/
-function check_post_fields(post, filePathIn) {
-  if (!post.title) {console_warn("MISSING title (" + filePathIn + ")");}
-  if (!post.subtitle) {console_warn("MISSING subtitle (" + filePathIn + ")");}
-  if (!post.desc) {console_warn("MISSING desc (" + filePathIn + ")");}
-  if (!post.published) {console_warn("MISSING published (" + filePathIn + ")");}
-  // if (!post.dateEdited) {console_warn("MISSING dateEdited (" + filePathIn + ")");}
-  if (!post.datePosted) {console_warn("MISSING datePosted (" + filePathIn + ")");}
-  if (!post.tags) {console_warn("MISSING tags (" + filePathIn + ")");}
+function check_post_fields(post) {
+  if (!post.title) {console_warn("MISSING title");}
+  if (!post.subtitle) {console_warn("MISSING subtitle");}
+  if (!post.desc) {console_warn("MISSING desc");}
+  if (!post.published) {console_warn("MISSING published");}
+  // if (!post.dateEdited) {console_warn("MISSING dateEdited");}
+  if (!post.datePosted) {console_warn("MISSING datePosted");}
+  if (!post.tags) {console_warn("MISSING tags");}
 }
 
 function console_warn(argument) {
