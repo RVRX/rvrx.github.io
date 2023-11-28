@@ -144,6 +144,11 @@ class Post {
     return path.join(BLOG_DIR + this.parentDir);
   }
 
+  //getter
+  get _path() {
+    return path.join(this.parentDir);
+  }
+
   //method
   getTags() {
     return 1;
@@ -284,25 +289,6 @@ generateBlogIndexFromPageMetaData(stagedPosts.sort((a,b) => b.datePosted - a.dat
 
 process.exit();
 
-
-// for each staged post generate blog HTML, and take note of post tags
-var allPostsWithTags = [];
-var allPosts = [];
-for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  const postStagedPath = stagingPath + stagedPosts[i];  // public/[staging]/*/*.md
-  const postPublishedPath = stagedPosts[i].substring(0, stagedPosts[i].lastIndexOf("/")) + '/';  // public/[blog]/*/*.html --> ../[blog]/*/
-  console.log("postPublishedPath");
-  console.log(postPublishedPath);
-  const ret = generatePostFromMd(postStagedPath, postPublishedPath);
-  allPosts[i] = ret;  // TODO: probably only need one post array, should get rid of allPostsWithTags
-  if ((ret !== 7) && (ret.tags)) { // if marked as published & has tags
-    allPostsWithTags[i] = ret;
-    // TODO, copy finished mds to public
-    // ^TODO, compare modified dates of public vs staging md? Only build updated ones? Ask before overwrite?
-  }
-
-}
-
 // potential future main thread
 /*
  * for each item in "staging/" {
@@ -315,57 +301,6 @@ for (var i = stagedPosts.length - 1; i >= 0; i--) {
  *
  */
 
-// generate tag pages (based off only the pages that have tags), TODO, use allPosts and Nunjucks.reject(page.tag === null)
-generateTagPagesFromPageMetaData(allPostsWithTags);
-
-// generate blog homepage (based off all pages [sorted by date])
-generateBlogIndexFromPageMetaData(allPosts.sort((a,b) => b.datePosted - a.datePosted));
-
-
-function generateTagPagesFromPageMetaData(pageMetaDataArray) {
-  // gather unique tags...
-  var uniqueTags = [];
-  // generate tag pages for each post by using the returned meta, data
-  for (var i = allPostsWithTags.length - 1; i >= 0; i--) {  // for each post
-    const page = allPostsWithTags[i];
-    for (var j = page.tags.length - 1; j >= 0; j--) {  // for each tag
-      const tag = page.tags[j];
-      if (!uniqueTags.includes(tag)) {uniqueTags.push(tag)}
-    }
-  }
-
-  console.debug('unique tags: ' + uniqueTags)
-
-
-  // for each tag, build a page
-  nunjucks.configure('views', { autoescape: false });
-  for (var i = uniqueTags.length - 1; i >= 0; i--) {
-    const uniqueTag = uniqueTags[i];
-    var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray, blogPath: process.env.BLOG_DIR.toString() });
-
-    // save to final .html file
-    try {
-      // create dirs
-      const tagDir = blogDir + 'tags/' + uniqueTag;
-      if (!fs.existsSync(tagDir)){
-          fs.mkdirSync(tagDir, { recursive: true }, (err) => {
-            if (err) throw err;
-          })
-
-      }
-      const tagFilePath = tagDir + '/index.html';
-      fs.writeFileSync(tagFilePath, finalRender);
-      // file written successfully
-      console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
-    } catch (err) {
-      console.error(err);
-      // TODO: Handle error
-    }
-  }
-}
-
-
-// TODO: should be a single function for saving templates. generatePage(*.njk, templateVars[], filePath);
 function generateBlogIndexFromPageMetaData(pageMetaDataArray) {
   console.log("generateBlogIndexFromPageMetaData:")
   console.log(pageMetaDataArray);
@@ -435,90 +370,6 @@ function createPostObjectFromFile(fileContents, metaDataOnly = false) {
 
   return post;
 }
-
-/**
- * Writes an HTML post to file.
- * Uses nunjucks template "views/post.njk"
- *
- * @param filePathIn ex: "staging/my-blog-post/something.md"
- * @param postFolder ex: "my-blog-post/". This will output the file at PUBLIC_DIR/BLOG_DIR/my-blog-post/index.html
- * @returns {post|number} post object see createPostObjectFromFile()  |OR|  1 if read error
- */
-function generatePostFromMd(filePathIn, postFolder) {
-
-  // const post = {
-  //   "title": "post title",
-  //   "subtitle": "post subtitle",
-  //   "desc": "SEO description",
-  //   "published": false,
-  //   "dateEdited": 0,
-  //   "datePosted": 0,
-  //   "tags": [tag1, tag2, ...]
-  // }
-
-  console.log("\nGENERATING POST: " + filePathIn + " ---> " + blogDir + postFolder);
-
-
-  var fileContents;
-  try {
-    fileContents = fs.readFileSync(filePathIn, 'utf8');
-    console.debug('file read');
-  } catch (err) {
-    console.error(err);
-    return 1;
-  }
-
-
-  var post = createPostObjectFromFile(fileContents);
-  console.debug('data extracted');
-  if (post.published === false) {console.log('post not published, skipping'); return 7;}
-
-  // apply input to template
-  nunjucks.configure('views', { autoescape: false });
-  var finalRender = nunjucks.render('post.njk', { post: post, body: md.render(post.rawMarkdown) });
-  post.rawMarkdown = null;  // remove bloat
-  console.debug('template applied');
-
-
-  // save to final index.html file
-  try {
-    
-    //mkdir
-    fs.mkdirSync(blogDir + postFolder, { recursive: true }, (err) => {
-      if (err) throw err;
-    })
-
-    fs.writeFileSync(blogDir + postFolder + 'index.html', finalRender);
-    // file written successfully
-    console.debug('HTML file written')
-
-    // copy all other assets over
-    // all items in filePathin, except the .md, should be copied over to postFolder
-    console.log("filePathIn: "+ filePathIn);
-    console.log("postFolder: "+ blogDir + postFolder);
-    const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
-    var postAssets = fs.readdirSync(directoryIn).filter((asset) => !asset.endsWith('.md'));
-    process.stdout.write('postAssets');
-    console.log(postAssets);
-    for (var i = postAssets.length - 1; i >= 0; i--) {
-      postAssets[i];
-      fs.copyFileSync(directoryIn + postAssets[i], blogDir + postFolder + postAssets[i]);
-      console.log("copy: '" + directoryIn + postAssets[i] + "'' to '" + blogDir + postFolder + postAssets[i] + "'");
-    }
-    
-
-
-  } catch (err) {
-    console.error(err);
-  }
-
-
-  console.debug('Task generatePostFromMd finished: ' + new Date().toLocaleTimeString());
-  post.body = null;
-  post._path = "/" + process.env.BLOG_DIR + postFolder;  // destination path for the post
-  return post;
-}
-
 
 /**
  * Check for missing fields in a post object
