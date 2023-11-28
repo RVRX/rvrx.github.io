@@ -77,25 +77,21 @@ class Post {
   constructor(postPath) {
     this.postPath = path.resolve(postPath);
     this.containingDir = path.dirname(this.postPath);
-    const foobar = parseRawPostContents(this.getFileContents(postPath), true);
-    Object.assign(this, foobar);
+    Object.assign(this, parseRawPostContents(this.getPostContentsFromDisk(postPath), true));
   }
 
 
   //getter
   get bodyMD() {
-    var fileContentsBySection;
-    fileContentsBySection = this.getFileContents(this.postPath).split('<!--# START POST #-->');
-    return fileContentsBySection.slice(1).join('');
+    // gets entire file contents from this post, cuts off the top JSON and joins the rest together
+    return this.getPostContentsFromDisk(this.postPath).split('<!--# START POST #-->').slice(1).join('');
   }
 
   //getter
   get bodyHTML() {
     // apply Nunjucks template to markdown
     nunjucks.configure('views', { autoescape: false });
-    var finalRender = nunjucks.render('post.njk', { post: this, body: md.render(this.bodyMD) });
-    // console.debug('bodyHTML generated');
-    return finalRender;
+    return nunjucks.render('post.njk', { post: this, body: md.render(this.bodyMD) });
   }
 
   //getter
@@ -119,14 +115,14 @@ class Post {
   }
 
   //method
-  getFileContents(filePathIn) {
+  getPostContentsFromDisk(filePathIn) {
     var fileContents;
     try {
       fileContents = fs.readFileSync(filePathIn, 'utf8');
       return fileContents;
     } catch (err) {
       console.error(err);
-      return -1;
+      process.exit(1);
     }
   }
 }
