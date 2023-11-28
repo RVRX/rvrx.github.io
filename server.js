@@ -68,9 +68,10 @@ const md = new MarkdownIt({
   .use(mdAnchor, {permalink: mdAnchor.permalink.linkInsideHeader({ placement: 'before' })})
 
 
-const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
 const PUBLIC_DIR = process.env.PUBLIC_DIR;
 const BLOG_DIR = path.join(PUBLIC_DIR, process.env.BLOG_DIR);
+const STAGING_DIR = path.normalize(process.env.STAGING_DIR);
+console.log(STAGING_DIR);
 
 // Post class definition
 class Post {
@@ -136,10 +137,10 @@ class Post {
 
 // search for posts in staging directory
 const stagingPath = 'staging/';
-var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+var stagedPosts = fs.readdirSync(STAGING_DIR);  // filename of each staged post
 // var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
+  var aPostAndItsAssets = fs.readdirSync(path.join(STAGING_DIR, '/', stagedPosts[i]));
   // get md name
   const isMarkdownFile = (element) => element.endsWith(".md");
   var markdownFileIndex = aPostAndItsAssets.findIndex(isMarkdownFile);
@@ -156,17 +157,22 @@ console.log(stagedPosts);
 
 
 // convert to actual posts
-stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
+stagedPosts = stagedPosts.map((postFileName) => new Post(path.join('staging/' + postFileName)));
 
 // filter out unpublished posts
 stagedPosts = stagedPosts.filter((post) => post.published);
 
-
-// publish all posts
+// publish posts
 stagedPosts.forEach((post) => publishPost(post));
 
 // create tag pages
 createTagPages(stagedPosts);
+
+// create blog homepage (from sorted posts)
+generateBlogIndexFromPosts(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
+
+console_debug(stagedPosts);
+
 
 /**
  * Copies post and its 'assets' to the out directory
@@ -186,20 +192,17 @@ function publishPost(aPost) {
     fs.writeFileSync(path.join(aPost.publishingDir + '/index.html'), aPost.bodyHTML);
 
     // copy all other assets over
-    // all items in filePathin, except the .md, should be copied over to postFolder
-    // console.log("filePathIn: "+ filePathIn);
-    // console.log("postFolder: "+ aPost.publishingDir);
-    // const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
+    // all items in containing directory, except the .md, should be copied over to postFolder
     var postAssets = fs.readdirSync(aPost.containingDir).filter((asset) => !asset.endsWith('.md'));
     postAssets = postAssets.map((x) => '/' + x); // add forward slash to start
-    // console.log(postAssets);
+    console_debug(postAssets);
     for (var i = postAssets.length - 1; i >= 0; i--) {
       postAssets[i];
       fs.copyFileSync(path.join(aPost.containingDir + postAssets[i]), aPost.publishingDir + postAssets[i]);
       // console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
     }
 
-    console.log("DONE!")
+    console.log(aPost.parentDir);
   } catch (err) {
     console_warn("ERROR!");
     console.error(err);
@@ -235,7 +238,7 @@ function createTagPages(stagedPosts) {
       const tagFilePath = path.join(tagDir + '/index.html');
       fs.writeFileSync(tagFilePath, finalRender);
       // file written successfully
-      console.log("GENERATING TAG: " + tag + " ---> " + tagFilePath);
+      console.log("GENERATING TAG: " + tag + " ---> " + path.dirname(tagFilePath));
     } catch (err) {
       console.error(err);
       // TODO: Handle error
@@ -243,31 +246,22 @@ function createTagPages(stagedPosts) {
   });
 }
 
-
-
-
 /**
- * Generate Blog Homepage
+ * create blog homepage
  **/
-generateBlogIndexFromPosts(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
-
-console.log(stagedPosts);
-
-
 function generateBlogIndexFromPosts(postList) {
-  console.log("generateBlogIndexFromPosts:");
 
   // Render Template
   nunjucks.configure('views', { autoescape: false });
   var finalRender = nunjucks.render('blog-index.njk', { posts: postList });
-  console.debug('template applied');
+  console_debug('template applied');
 
 
   // save to final .html file
   try {
     fs.writeFileSync(path.join(BLOG_DIR, '/index.html'), finalRender);
     // file written successfully
-    console.debug('HTML file written')
+    console_debug('HTML file written')
   } catch (err) {
     console_warn('failed to generate blog index!');
     console.error(err);
@@ -325,4 +319,10 @@ function check_post_fields(post) {
 
 function console_warn(argument) {
   console.warn("\x1b[33m" + argument + "\x1b[0m");
+}
+
+function console_debug(argument) {
+  if (process.env.debug) {
+    console.debug(argument);  
+  }
 }
