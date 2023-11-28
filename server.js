@@ -71,7 +71,6 @@ const md = new MarkdownIt({
 const PUBLIC_DIR = process.env.PUBLIC_DIR;
 const BLOG_DIR = path.join(PUBLIC_DIR, process.env.BLOG_DIR);
 const STAGING_DIR = path.normalize(process.env.STAGING_DIR);
-console.log(STAGING_DIR);
 
 // Post class definition
 class Post {
@@ -135,28 +134,18 @@ class Post {
 
 
 
-// search for posts in staging directory
-const stagingPath = 'staging/';
-var stagedPosts = fs.readdirSync(STAGING_DIR);  // filename of each staged post
-// var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
-for (var i = stagedPosts.length - 1; i >= 0; i--) {
-  var aPostAndItsAssets = fs.readdirSync(path.join(STAGING_DIR, '/', stagedPosts[i]));
-  // get md name
-  const isMarkdownFile = (element) => element.endsWith(".md");
-  var markdownFileIndex = aPostAndItsAssets.findIndex(isMarkdownFile);
-  if (markdownFileIndex === -1) {
-    console.error('Markdown file not found in staging directory, skipping');
-    console_warn('Markdown file not found in staging directory, skipping');
-    exit(1);
-  }
-  stagedPosts[i] = stagedPosts[i] + '/' + aPostAndItsAssets[markdownFileIndex];
-}
-console.log('stagedPosts:');
-console.log(stagedPosts);
+// get paths to staged markdown files
+var stagedPosts = fs.readdirSync(path.resolve(STAGING_DIR), { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .map(folder => {  // get first *.md in folder
+    var folderContents = fs.readdirSync(path.join(folder.path, folder.name));
+    var markdownFileIndex = folderContents.findIndex((element) => element.endsWith(".md")); // find first index that passes func
+    return markdownFileIndex === -1 ? null : path.join(folder.name, folderContents[markdownFileIndex]);  // return filename or null if no *md
+  })
+  .filter(files => !!files); // filter out null/undefined
 
 
-
-// convert to actual posts
+// convert paths to actual posts
 stagedPosts = stagedPosts.map((postFileName) => new Post(path.join('staging/' + postFileName)));
 
 // filter out unpublished posts
