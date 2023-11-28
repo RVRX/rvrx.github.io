@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 // File IO
 import fs from 'fs';
+import path from 'node:path';
 
 // dotenv
 import 'dotenv/config'
@@ -68,11 +69,23 @@ const md = new MarkdownIt({
 
 
 const blogDir = process.env.PUBLIC_DIR + process.env.BLOG_DIR;
+const PUBLIC_DIR = process.env.PUBLIC_DIR;
+const BLOG_DIR = path.join(PUBLIC_DIR, process.env.BLOG_DIR);
+
+
+
+
+console.log("BLOG_DIR:");
+console.log(BLOG_DIR);
 
 
 // search for posts in staging directory
 const stagingPath = 'staging/';
+// const stagingpath2 = path.resolve('staging');
+// console.log('stagingpath2:');
+// console.log(stagingpath2);
 var stagedPosts = fs.readdirSync(stagingPath);  // filename of each staged post
+// var stagedPosts = fs.readdirSync(stagingPath, { withFileTypes: true });  // filename of each staged post
 for (var i = stagedPosts.length - 1; i >= 0; i--) {
   console.debug(stagedPosts[i]);
   var aPostAndItsAssets = fs.readdirSync(stagingPath + stagedPosts[i]);
@@ -88,6 +101,189 @@ for (var i = stagedPosts.length - 1; i >= 0; i--) {
 }
 console.log('stagedPosts');
 console.log(stagedPosts);
+
+
+// Post class definition
+class Post {
+  constructor(postPath) {
+    this.postPath = path.resolve(postPath);
+    this.containingDir = path.dirname(this.postPath);
+    const foobar = createPostObjectFromFile(this.getFileContents(postPath), true);
+    Object.assign(this, foobar);
+  }
+
+
+  //getter
+  get bodyMD() {
+    var fileContentsBySection;
+    fileContentsBySection = this.getFileContents(this.postPath).split('<!--# START POST #-->');
+    return fileContentsBySection.slice(1).join('');
+  }
+
+  //getter
+  get bodyHTML() {
+    // apply Nunjucks template to markdown
+    nunjucks.configure('views', { autoescape: false });
+    var finalRender = nunjucks.render('post.njk', { post: this, body: md.render(this.bodyMD) });
+    console.debug('bodyHTML generated');
+    return finalRender;
+  }
+
+  //getter
+  get filename() {
+    return path.basename(this.postPath);
+  }
+
+  //getter
+  get parentDir() {
+    return path.basename(path.dirname(this.postPath));
+  }
+
+  //getter
+  get publishingDir() {
+    return path.join(BLOG_DIR + this.parentDir);
+  }
+
+  //method
+  getTags() {
+    return 1;
+  }
+
+  //method
+  getFileContents(filePathIn) {
+    var fileContents;
+    try {
+      fileContents = fs.readFileSync(filePathIn, 'utf8');
+      return fileContents;
+    } catch (err) {
+      console.error(err);
+      return -1;
+    }
+  }
+}
+
+
+
+// convert to actual posts
+stagedPosts = stagedPosts.map((x) => new Post('staging/' + x))
+console.log(stagedPosts);
+
+console.log('postFolder testststststs');
+console.log(stagedPosts[0].parentDir);
+
+
+console.log('published dir test:');
+console.log(stagedPosts[0].publishingDir);
+
+/**
+ * Copies post and its 'assets' to the out directory
+ **/
+function publishPost(aPost) {
+  try {
+    
+    // create this post's publishing directory if it doesnt exist
+    fs.mkdirSync(aPost.publishingDir, { recursive: true }, (err) => {
+      if (err) throw err;
+    })
+
+    // create index.html
+    fs.writeFileSync(path.join(aPost.publishingDir + '/index.html'), aPost.bodyHTML);
+    console.debug('HTML file written');
+
+    // copy all other assets over
+    // all items in filePathin, except the .md, should be copied over to postFolder
+    // console.log("filePathIn: "+ filePathIn);
+    // console.log("postFolder: "+ aPost.publishingDir);
+    // const directoryIn = filePathIn.substring(0, filePathIn.lastIndexOf("/")) + '/';
+    var postAssets = fs.readdirSync(aPost.containingDir).filter((asset) => !asset.endsWith('.md'));
+    postAssets = postAssets.map((x) => '/' + x); // add forward slash to start
+    process.stdout.write('postAssets');
+    console.log(postAssets);
+    for (var i = postAssets.length - 1; i >= 0; i--) {
+      postAssets[i];
+      fs.copyFileSync(path.join(aPost.containingDir + postAssets[i]), aPost.publishingDir + postAssets[i]);
+      console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+publishPost(stagedPosts[0])
+
+
+/**
+ * create tag-pages
+ **/
+function createTagPages() {
+  // get all unique tags
+  var tags = stagedPosts.map((x) => x.tags); // posts -> tags conversion
+  tags = [].concat(...tags);  // 2D to 1D array conversion
+  tags = [...new Set(tags)];  // strip duplicates
+  console.log(tags);
+
+
+  nunjucks.configure('views', { autoescape: false });
+  tags.forEach((tag) => {
+    // render template
+    var finalRender = nunjucks.render('tag.njk', { tagName: tag, posts: stagedPosts, blogPath: process.env.BLOG_DIR.toString() });
+    // save to file
+    try {
+      // create dirs
+      const tagDir = path.join(BLOG_DIR, '/tags/', tag);
+      if (!fs.existsSync(tagDir)){
+          fs.mkdirSync(tagDir, { recursive: true }, (err) => {
+            if (err) throw err;
+          })
+
+      }
+      const tagFilePath = path.join(tagDir + '/index.html');
+      fs.writeFileSync(tagFilePath, finalRender);
+      // file written successfully
+      console.log("GENERATING TAG: " + tag + " ---> " + tagFilePath);
+    } catch (err) {
+      console.error(err);
+      // TODO: Handle error
+    }
+  });
+
+  // for each tag, build a page
+  // nunjucks.configure('views', { autoescape: false });
+  // for (var i = tags.length - 1; i >= 0; i--) {
+  //   const uniqueTag = tags[i];
+  //   var finalRender = nunjucks.render('tag.njk', { tagName: uniqueTag, posts: pageMetaDataArray, blogPath: process.env.BLOG_DIR.toString() });
+
+  //   // save to final .html file
+  //   try {
+  //     // create dirs
+  //     const tagDir = blogDir + 'tags/' + uniqueTag;
+  //     if (!fs.existsSync(tagDir)){
+  //         fs.mkdirSync(tagDir, { recursive: true }, (err) => {
+  //           if (err) throw err;
+  //         })
+
+  //     }
+  //     const tagFilePath = tagDir + '/index.html';
+  //     fs.writeFileSync(tagFilePath, finalRender);
+  //     // file written successfully
+  //     console.log("GENERATING TAG: " + uniqueTag + " ---> " + tagFilePath);
+  //   } catch (err) {
+  //     console.error(err);
+  //     // TODO: Handle error
+  //   }
+  // }
+}
+
+createTagPages();
+
+
+/**
+ * Generate Blog Homepage
+ **/
+generateBlogIndexFromPageMetaData(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
+
+process.exit();
+
 
 // for each staged post generate blog HTML, and take note of post tags
 var allPostsWithTags = [];
