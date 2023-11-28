@@ -135,6 +135,7 @@ class Post {
 
 
 // get paths to staged markdown files
+console.log("~ Collecting posts...");
 var stagedPosts = fs.readdirSync(path.resolve(STAGING_DIR), { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(folder => {  // get first *.md in folder
@@ -152,15 +153,20 @@ stagedPosts = stagedPosts.map((postFileName) => new Post(path.join('staging/' + 
 stagedPosts = stagedPosts.filter((post) => post.published);
 
 // publish posts
+console.log("~ Sending posts to publisher...");
 stagedPosts.forEach((post) => publishPost(post));
 
 // create tag pages
+console.log("~ Sending posts to tag builder...");
 createTagPages(stagedPosts);
 
 // create blog homepage (from sorted posts)
+console.log("~ Sending posts to homepage builder...");
 generateBlogIndexFromPosts(stagedPosts.sort((a,b) => b.datePosted - a.datePosted));
 
 console_debug(stagedPosts);
+
+console.log("~ Done");
 
 
 /**
@@ -168,7 +174,7 @@ console_debug(stagedPosts);
  **/
 function publishPost(aPost) {
 
-  process.stdout.write('GENERATING POST: ' + aPost.title + ' ... ');
+  process.stdout.write('[publishPost]: ' + aPost.parentDir + ' --> ');
 
   try {
 
@@ -191,7 +197,7 @@ function publishPost(aPost) {
       // console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
     }
 
-    console.log(aPost.parentDir);
+    console.log(path.join(aPost.publishingDir + '/index.html'));
   } catch (err) {
     console_warn("ERROR!");
     console.error(err);
@@ -227,7 +233,7 @@ function createTagPages(stagedPosts) {
       const tagFilePath = path.join(tagDir + '/index.html');
       fs.writeFileSync(tagFilePath, finalRender);
       // file written successfully
-      console.log("GENERATING TAG: " + tag + " ---> " + path.dirname(tagFilePath));
+      console.log("[createTagPages]: " + tag + " ---> " + path.dirname(tagFilePath));
     } catch (err) {
       console.error(err);
       // TODO: Handle error
