@@ -56,7 +56,7 @@
 	          {% if (post.dateEdited.getTime() !== post.datePosted.getTime()) %}
 	          	<li><em><time datetime="{{ post.dateEdited.getFullYear().toString() + '-' + post.dateEdited.getMonth() + '-' + post.dateEdited.getDate().toString() }}">Edited: {{ post.dateEdited.toLocaleString('default', { day: 'numeric', month: 'short', year: 'numeric'}) }}</time></em></li>
 	          {% endif %}
-	          {% if post.tags %}
+	          {% if post.tags and post.tags.length %}
 	          	<li>
 	            {% for tag in post.tags %}
 	            	<a href="../tags/{{ tag }}" class="post-tag">{{ tag }}</a>{% if not loop.last %},{% endif %}
