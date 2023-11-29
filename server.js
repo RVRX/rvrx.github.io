@@ -76,6 +76,9 @@ const STAGING_DIR = path.normalize(process.env.STAGING_DIR);
 class Post {
   constructor(postPath) {
     this.postPath = path.resolve(postPath);
+    console_debug("new post:");
+    console_debug(this.postPath);
+    console_debug("\n");
     this.containingDir = path.dirname(this.postPath);
     Object.assign(this, parseRawPostContents(this.getPostContentsFromDisk(postPath), true));
     this.datePosted = new Date(this.datePosted);  // convert post date string into Date object
@@ -147,10 +150,14 @@ var stagedPosts = fs.readdirSync(path.resolve(STAGING_DIR), { withFileTypes: tru
 
 
 // convert paths to actual posts
+console_debug("START converting paths to Posts");
 stagedPosts = stagedPosts.map((postFileName) => new Post(path.join('staging/' + postFileName)));
+console_debug("DONE converting paths to Posts");
 
 // filter out unpublished posts
+console_debug("START filter out unpublished");
 stagedPosts = stagedPosts.filter((post) => post.published);
+console_debug("DONE filter out unpublished");
 
 // publish posts
 console.log("~ Sending posts to publisher...");
