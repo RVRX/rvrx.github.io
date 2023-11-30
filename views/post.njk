@@ -19,6 +19,7 @@
     <link href="/sidebar.css" rel="stylesheet">
     <link href="/post.css" rel="stylesheet">
     <link href="/prismjs/prism.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
 </head>
 {% include "gtag.njk" %}
@@ -43,7 +44,7 @@
 </style>
 <div id="main">
     <div class="post">
-        <h1 style="background-color: {{ post.color }}">{{ post.title }}</h1>
+        <h1 style="background-color: {{ post.color }}; transition-duration: 660ms;" data-aos="fade-right">{{ post.title }}</h1>
         <div id="post-metadata">
           {% if post.subtitle %}
           	<h2 class="subtitle">{{ post.subtitle }}</h2>
@@ -73,4 +74,8 @@
 </div>
 <script src="/prismjs/prism.js"></script>
 </body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 </html>
