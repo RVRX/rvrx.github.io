@@ -199,7 +199,6 @@ function publishPost(aPost) {
     postAssets = postAssets.map((x) => '/' + x); // add forward slash to start
     console_debug(postAssets);
     for (var i = postAssets.length - 1; i >= 0; i--) {
-      postAssets[i];
       fs.copyFileSync(path.join(aPost.containingDir + postAssets[i]), aPost.publishingDir + postAssets[i]);
       // console.log("copy: '" + aPost.containingDir + postAssets[i] + "' to '" + aPost.publishingDir + postAssets[i] + "'");
     }
