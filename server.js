@@ -177,8 +177,11 @@ console.log("~ Done");
 
 
 /**
- * Copies post and its 'assets' to the out directory
- **/
+ * Converts the given post from MD to HTML and publishes it to its Post.publishingDir
+ *
+ * SAVE LOCATION: "$Post.publishingDir/index.html"
+ * @param aPost a Post object
+ */
 function publishPost(aPost) {
 
   process.stdout.write('[publishPost]: ' + aPost.parentDir + ' --> ');
@@ -211,11 +214,14 @@ function publishPost(aPost) {
 }
 
 /**
- * create tag-pages
- **/
-function createTagPages(stagedPosts) {
+ * For each unique tag, creates a page listing posts with said tag
+ *
+ * SAVE LOCATION: "$BLOG_DIR/tags/[unique_tag]"
+ * @param posts Post[]
+ */
+function createTagPages(posts) {
   // get all unique tags
-  var tags = stagedPosts.map((x) => x.tags); // posts -> tags conversion
+  var tags = posts.map((x) => x.tags); // posts -> tags conversion
   tags = [].concat(...tags);  // 2D to 1D array conversion
   tags = [...new Set(tags)];  // strip duplicates
   // remove undefined tags
@@ -225,7 +231,7 @@ function createTagPages(stagedPosts) {
   nunjucks.configure('views', { autoescape: false });
   tags.forEach((tag) => {
     // render template
-    var finalRender = nunjucks.render('tag.njk', { tagName: tag, posts: stagedPosts, blogPath: process.env.BLOG_DIR.toString() });
+    var finalRender = nunjucks.render('tag.njk', { tagName: tag, posts: posts, blogPath: process.env.BLOG_DIR.toString() });
     // save to file
     try {
       // create dirs
@@ -248,8 +254,11 @@ function createTagPages(stagedPosts) {
 }
 
 /**
- * create blog homepage
- **/
+ * Creates the blog index (list of blog posts) from the given Posts
+ *
+ * SAVE LOCATION: "$BLOG_DIR/index.html"
+ * @param postList Post[]
+ */
 function generateBlogIndexFromPosts(postList) {
 
   // Render Template
@@ -271,20 +280,11 @@ function generateBlogIndexFromPosts(postList) {
 }
 
 
-/** TODO: Comment Signature outdated
- * Creates a 'post' object from an input file contents
- * @param fileContents :string - of a file as string
- * @param metaDataOnly :boolean - true will remove post.rawMarkdown property
- * @returns {post}:
- *      "title": "post title" (string),
- *      "subtitle": "post subtitle" (string),
- *      "desc": "SEO description" (string),
- *      "published": ready for publication? (boolean),
- *      "dateEdited": dateEdited (Date object), [OPTIONAL]
- *      "datePosted": dateEdited (Date object)
- *      "tags": [tag1, tag2, ...]
- * NO Guarantees are made on the correctness or existence of any fields!
- * Values will be checked and warnings will be printed if absent, but that is all.
+/**
+ * Parses the contents of a post's raw text to find JSON objects
+ * @param fileContents raw text contents of a post
+ * @param metaDataOnly return only JSON metadata without markdown contents
+ * @returns {*} JSON contents as object + raw body as *.rawMarkdown
  */
 function parseRawPostContents(fileContents, metaDataOnly = false) {
 
