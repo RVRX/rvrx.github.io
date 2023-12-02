@@ -49,7 +49,7 @@ If you are SSH'ed into a machine when you start up a tunnel with these rules set
 If you are most people you ***should be able to*** just change the kill-switch lines to include an exception for your local IP. This is done by adding `! -d 10.0.0.0/24` just before the `-j Reject` in the iptables command (where the IP/Mask is your local subnet). Just like the `! --dst-type LOCAL` indicated not (!) to include localhost IPs in the rule, this adds an exception for destination in the specified IP/subnet.
 
 Like so:
-```
+```bash
 PostUp = iptables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL ! -d 10.0.0.0/24 -j REJECT && ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
 PostDown = iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL ! -d 10.0.0.0/24 -j REJECT && ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
 ```
@@ -78,7 +78,7 @@ So if your machine is on the `10.0.2.0/24` subnet, normally uses the interface `
 
 ##### Part 2: Adding iptables exception
 Now your machine knows how to access these other subnets, but the iptables kill-switch in our config is still going to prevent us from talking to other devices over interfaces other than our WireGuard one. The fix for this is, well, to override those rules. The syntax follows:
-```
+```bash
 PostUp = iptables -I OUTPUT -d [subnet/mask] -j ACCEPT
 PostDown = iptables -D OUTPUT -d [subnet/mask] -j ACCEPT
 ```

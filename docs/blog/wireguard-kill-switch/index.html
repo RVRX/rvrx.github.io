@@ -117,7 +117,7 @@ PreDown = iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show  %i fwmark) -m a
 <h4 id="for-most%3A-iptables-rule-exception" tabindex="-1"><a class="header-anchor" href="#for-most%3A-iptables-rule-exception">#</a> For Most: IPtables rule exception</h4>
 <p>If you are most people you <em><strong>should be able to</strong></em> just change the kill-switch lines to include an exception for your local IP. This is done by adding <code>! -d 10.0.0.0/24</code> just before the <code>-j Reject</code> in the iptables command (where the IP/Mask is your local subnet). Just like the <code>! --dst-type LOCAL</code> indicated not (!) to include localhost IPs in the rule, this adds an exception for destination in the specified IP/subnet.</p>
 <p>Like so:</p>
-<pre><code class="language-">PostUp = iptables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL ! -d 10.0.0.0/24 -j REJECT &amp;&amp; ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
+<pre><code class="language-bash">PostUp = iptables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL ! -d 10.0.0.0/24 -j REJECT &amp;&amp; ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
 PostDown = iptables -D OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL ! -d 10.0.0.0/24 -j REJECT &amp;&amp; ip6tables -I OUTPUT ! -o %i -m mark ! --mark $(wg show %i fwmark) -m addrtype ! --dst-type LOCAL -j REJECT
 </code></pre>
 <p>But, as I said earlier, this won't work for everyone.</p>
@@ -135,7 +135,7 @@ PreDown = ip route del [Subnet/Mask] via [Gateway IP] dev [normal, non wg interf
 <p>So if your machine is on the <code>10.0.2.0/24</code> subnet, normally uses the interface <code>ens18</code> (check <code>ip a</code> for your default interface) and you want to be able to access devices on the <code>10.0.1.0/24</code> subnet, you would need to tell the OS to  add <code>ip route add 10.0.1.0/24 via 10.0.2.1 dev ens18</code>.</p>
 <h5 id="part-2%3A-adding-iptables-exception" tabindex="-1"><a class="header-anchor" href="#part-2%3A-adding-iptables-exception">#</a> Part 2: Adding iptables exception</h5>
 <p>Now your machine knows how to access these other subnets, but the iptables kill-switch in our config is still going to prevent us from talking to other devices over interfaces other than our WireGuard one. The fix for this is, well, to override those rules. The syntax follows:</p>
-<pre><code class="language-">PostUp = iptables -I OUTPUT -d [subnet/mask] -j ACCEPT
+<pre><code class="language-bash">PostUp = iptables -I OUTPUT -d [subnet/mask] -j ACCEPT
 PostDown = iptables -D OUTPUT -d [subnet/mask] -j ACCEPT
 </code></pre>
 <p>This should go <strong>AFTER</strong> the kill-switch.</p>
