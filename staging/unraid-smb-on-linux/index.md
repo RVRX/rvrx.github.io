@@ -11,7 +11,7 @@
 }
 <!--# START POST #-->
 
-This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the `noserverino` fix for stale file handles that can be encountered with Unraid's SMB implementation.
+This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the `noserverino` fix for stale file handles that can be encountered due to the Unraid Mover's impact on the Unraid SMB server.
 
 ## Install SMB/CIFS
 Install SMB utlitiy to allow CIFS mounting: 

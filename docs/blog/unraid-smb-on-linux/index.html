@@ -92,7 +92,7 @@
 	  	 
 	    </div>
         <div id="post-body">
-            <p>This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the <code>noserverino</code> fix for stale file handles that can be encountered with Unraid's SMB implementation.</p>
+            <p>This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the <code>noserverino</code> fix for stale file handles that can be encountered due to the Unraid Mover's impact on the Unraid SMB server.</p>
 <h2 id="install-smb%2Fcifs" tabindex="-1"><a class="header-anchor" href="#install-smb%2Fcifs">#</a> Install SMB/CIFS</h2>
 <p>Install SMB utlitiy to allow CIFS mounting:</p>
 <pre><code class="language-">apt-get install cifs-utils
