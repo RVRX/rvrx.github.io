@@ -1,6 +1,7 @@
 {
   "title": "3rd Party Email Client w/ iCloud Custom Email Domain",
   "subtitle": "",
+  "seo_keywords": "guide, icloud, email, SMTP",
   "desc": "How to add iCloud custom email domain to third party email client like Thunderbird",
   "published": true,
   "dateEdited": 1693540800000,

@@ -1,6 +1,7 @@
 {
   "title": "Starting a NAS Homelab",
   "subtitle": "NAS Homelab - 6 Months 'In'",
+  "seo_keywords": "unraid, NAS, homelab",
   "desc": "The start of my journey creating an Unraid NAS",
   "published": true,
   "dateEdited": 1666756800000,

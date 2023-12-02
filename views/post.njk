@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">
-    {% if post.desc %}
+    <meta name="keywords" content="{{ post.seo_keywords }}, Cole Manning, Blog, RVRX">{% if post.desc %}
 	<meta name="description" content="{{ post.desc }}">
 	{% else %}
     <meta name="description" content="Website and Dev Blog of Cole Manning">

@@ -1,6 +1,7 @@
 {
   "title": "Unraid SMB Shares on Linux",
   "subtitle": "Permanently adding an Unraid SMB share to a Linux client",
+  "seo_keywords": "Unraid, smb, nfs, nas, linux",
   "desc": "How to setup an Unraid SMB share to automatically mount on boot on a Linux client",
   "published": true,
   "dateEdited": 1698811200000,

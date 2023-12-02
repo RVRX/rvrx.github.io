@@ -1,6 +1,7 @@
 {
   "title": "Techno Ambiance",
   "subtitle": "",
+  "seo_keywords": "Techno Ambiance, Touch Designer",
   "desc": "Techno Ambiance was a join-venture audio-visual performance between usnul and me.",
   "published": true,
   "dateEdited": 1675227600000,
