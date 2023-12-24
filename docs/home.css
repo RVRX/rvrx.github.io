@@ -5,7 +5,7 @@ body {
     /* Background image styling */
     /* https://css-tricks.com/perfect-full-page-background-image/, but expanded to allow for fallback color */
     background-color: rgb(35, 35, 35);
-    background-image: url("img/homepage-background-SfW-jpeg-80-40prcnt.jpg");
+    background-image: url("img/homepage-background-SfW-jpeg-80-40prcnt.webp");
     background-position: center center;
     background-attachment: fixed;
     background-repeat: no-repeat;
