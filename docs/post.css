@@ -44,7 +44,7 @@ div#sidebar, div#main {
 #post-body, #post-metadata {
     color: rgb(186,186, 186);
     font-size: 1rem;
-    font-family: monospace;
+    font-family: Roboto, sans-serif;
 
     background-color: rgba(20, 20, 20, 0.95);
     margin-left: 1rem;
