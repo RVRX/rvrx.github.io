@@ -99,6 +99,7 @@ code:not(code[class^="language-"]) {
     white-space: normal;
     background: #2d2d2d;
     color: #ccc;
+    font-size: 0.8rem;
 }
 
 div#post-body h3 a.header-anchor:before {
