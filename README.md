@@ -5,13 +5,13 @@ Dependencies: NodeJS (& NPM).
 After cloning, run `npm install` in root repository folder. Run `npm start` to build new changes.
 
 ## Project Structure
-- `public/` is the directory that should be served to the web
+- `docs/` is the directory that should be served to the web
 - New markdown posts should be placed into `staging/`
 - `views/` contains Nunjucks templates
 - `server.js` is the main NodeJS script that builds the site
 
 ## Writing new blog posts
-New blog post files are to be written in markdown and placed into the `staging/` folder at the root of this repo. Running `npm start` will convert these files to markdown, and place them into the `public/blog/`  directory.
+New blog post files are to be written in markdown and placed into the `staging/` folder at the root of this repo. Running `npm start` will convert these files to markdown, and place them into the `docs/blog/`  directory.
 
 
 ## Dev-notes
