@@ -1,15 +1,16 @@
-{
-  "title": "3rd Party Email Client w/ iCloud Custom Email Domain",
-  "subtitle": "",
-  "seo_keywords": "guide, icloud, email, SMTP",
-  "desc": "How to add iCloud custom email domain to third party email client like Thunderbird",
-  "published": true,
-  "dateEdited": 1693540800000,
-  "datePosted": 1693540800000,
-  "tags": [ "guide" ],
-  "color": "#887AA2"
-}
-<!--# START POST #-->
+---
+title: 3rd Party Email Client w/ iCloud Custom Email Domain
+subtitle: 
+seo_keywords: "guide, icloud, email, SMTP"
+desc: How to add iCloud custom email domain to third party email client like Thunderbird
+published: true
+dateEdited: "2023-09-01T04:00:00.000Z"
+datePosted: "2023-09-01T04:00:00.000Z"
+tags:
+  - "guide"
+color: "#887AA2"
+---
+
 
 ## Why
 I've just signed up for *iCloud+* to use the "[Custom Email Domain](https://support.apple.com/en-us/HT212514)" feature as my email host. At $0.99/mo it certainly beats Google Workspace's $6/mo, and hey, my iPhone yelled at me just this morning that my iCloud storage was full. I was fully expecting there to be some element to keep me in the Apple ecosystem and make using 3rd party apps a pain, but to my surprise - **other than no documentation on the process - it was doable**.

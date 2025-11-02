@@ -1,15 +1,16 @@
-{
-  "title": "Techno Ambiance",
-  "subtitle": "",
-  "seo_keywords": "Techno Ambiance, Touch Designer",
-  "desc": "Techno Ambiance was a join-venture audio-visual performance between usnul and me.",
-  "published": true,
-  "dateEdited": 1675227600000,
-  "datePosted": 1675227600000,
-  "tags": [ "VJ" ],
-  "color": "#b5add6"
-}
-<!--# START POST #-->
+---
+title: Techno Ambiance
+subtitle: 
+seo_keywords: "Techno Ambiance, Touch Designer"
+desc: Techno Ambiance was a join-venture audio-visual performance between usnul and me.
+published: true
+dateEdited: "2023-02-01T05:00:00.000Z"
+datePosted: "2023-02-01T05:00:00.000Z"
+tags:
+  - "VJ"
+color: "#b5add6"
+---
+
 
 <p><strong>Techno Ambiance</strong> was a joint-venture audio-visual performance between <a href="https://soundcloud.com/positivekush"><em><strong>usnul</strong></em></a> (as DJ) and me, <em><strong>RVRX</strong></em> (on visuals), hosted by <a href="https://www.instagram.com/wwpiradioclub">WWPI Radio</a>. Credit to <em>usnul</em> for coming up with the idea of the performance and tagging me in for visuals. The VIPs of the show, however, were the stage spanning LED wall above us and the short-throw projector at our flank -- it was my goal to fill these with audio-reactive visuals.</p>
 <p><picture><source type="image/avif" srcset="hTQq1j_WfD-868.avif 868w"><source type="image/webp" srcset="hTQq1j_WfD-868.webp 868w"><img alt="Event Flyer" loading="lazy" decoding="async" src="hTQq1j_WfD-868.png" width="868" height="1228"></picture></p>

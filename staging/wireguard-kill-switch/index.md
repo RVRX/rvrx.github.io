@@ -1,15 +1,18 @@
-{
-  "title": "Wireguard Kill-Switch",
-  "subtitle": "How to set up a killswitch for WireGuard when you have multiple LAN subnets",
-  "seo_keywords": "killswitch, kill-switch, linux, wire guard, wireguard",
-  "desc": "Kill-Switch for WireGuard on Linux with multiple subnets",
-  "published": true,
-  "dateEdited": 1685592000000,
-  "datePosted": 1685592000000,
-  "tags": [ "guide", "linux", "wireguard" ],
-  "color": "#86a27a"
-}
-<!--# START POST #-->
+---
+title: Wireguard Kill-Switch
+subtitle: How to set up a killswitch for WireGuard when you have multiple LAN subnets
+seo_keywords: "killswitch, kill-switch, linux, wire guard, wireguard"
+desc: Kill-Switch for WireGuard on Linux with multiple subnets
+published: true
+dateEdited: "2023-06-01T04:00:00.000Z"
+datePosted: "2023-06-01T04:00:00.000Z"
+tags:
+  - "guide"
+  - "linux"
+  - "wireguard"
+color: "#86a27a"
+---
+
 
 ## Intro, and Setting Up WireGuard
 This is a guide on setting up a Kill-Switch for WireGuard on Linux, covering some niche network cases. The server used to test this was running Ubuntu 22.04 LTS, but the commands are not unique to Ubuntu and most Linux distros should follow suit.

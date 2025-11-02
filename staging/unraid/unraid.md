@@ -1,15 +1,17 @@
-{
-  "title": "Starting a NAS Homelab",
-  "subtitle": "NAS Homelab - 6 Months 'In'",
-  "seo_keywords": "unraid, NAS, homelab",
-  "desc": "The start of my journey creating an Unraid NAS",
-  "published": true,
-  "dateEdited": 1666756800000,
-  "datePosted": 1666756800000,
-  "tags": [ "unraid", "homelab" ],
-  "color": "#f97d6e"
-}
-<!--# START POST #-->
+---
+title: Starting a NAS Homelab
+subtitle: "NAS Homelab - 6 Months 'In'"
+seo_keywords: "unraid, NAS, homelab"
+desc: The start of my journey creating an Unraid NAS
+published: true
+dateEdited: "2022-10-26T04:00:00.000Z"
+datePosted: "2022-10-26T04:00:00.000Z"
+tags:
+  - "unraid"
+  - "homelab"
+color: "#f97d6e"
+---
+
 
 <h2 id="planning" tabindex="-1">Planning <a class="header-anchor" href="#planning">#</a></h2>
 <h3 id="why" tabindex="-1">Why? <a class="header-anchor" href="#why">#</a></h3>

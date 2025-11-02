@@ -1,15 +1,19 @@
-{
-  "title": "Unraid SMB Shares on Linux",
-  "subtitle": "Permanently adding an Unraid SMB share to a Linux client",
-  "seo_keywords": "Unraid, smb, nfs, nas, linux",
-  "desc": "How to setup an Unraid SMB share to automatically mount on boot on a Linux client",
-  "published": true,
-  "dateEdited": 1698811200000,
-  "datePosted": 1698811200000,
-  "tags": [ "guide", "unraid", "linux", "homelab" ],
-  "color": "#7A9CA2"
-}
-<!--# START POST #-->
+---
+title: Unraid SMB Shares on Linux
+subtitle: Permanently adding an Unraid SMB share to a Linux client
+seo_keywords: "Unraid, smb, nfs, nas, linux"
+desc: How to setup an Unraid SMB share to automatically mount on boot on a Linux client
+published: true
+dateEdited: "2023-11-01T04:00:00.000Z"
+datePosted: "2023-11-01T04:00:00.000Z"
+tags:
+  - "guide"
+  - "unraid"
+  - "linux"
+  - "homelab"
+color: "#7A9CA2"
+---
+
 
 This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the `noserverino` fix for stale file handles that can be encountered due to the Unraid Mover's impact on the Unraid SMB server.
 

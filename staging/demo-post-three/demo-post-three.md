@@ -1,14 +1,16 @@
-{
-  "title": "Demo 3",
-  "subtitle": "demo 3 subtitle",
-  "desc": "demo 3Dynamic DNS to resolve the server IP reliably from outside the network",
-  "published": false,
-  "dateEdited": 2399708131979,
-  "datePosted": 2399708131979,
-  "tags": [ "tag1", "tag3" ],
-  "color": "red"
-}
-<!--# START POST #-->
+---
+title: Demo 3
+subtitle: demo 3 subtitle
+desc: demo 3Dynamic DNS to resolve the server IP reliably from outside the network
+published: false
+dateEdited: "2046-01-16T09:35:31.979Z"
+datePosted: "2046-01-16T09:35:31.979Z"
+tags:
+  - "tag1"
+  - "tag3"
+color: red
+---
+
 
 This guide will explains how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the `noserverino` fix for stale file handles.
 

@@ -1,12 +1,12 @@
-{
-  "title": "This Blog",
-  "subtitle": "This is a subtitle, it better look like one! Okay a little big and why is it in the top corner?",
-  "desc": "about this blog",
-  "published": false,
-  "dateEdited": 1701279650660,
-  "datePosted": 1609522859000
-}
-<!--# START POST #-->
+---
+title: This Blog
+subtitle: "This is a subtitle, it better look like one! Okay a little big and why is it in the top corner?"
+desc: about this blog
+published: false
+dateEdited: "2023-11-29T17:40:50.660Z"
+datePosted: "2021-01-01T17:40:59.000Z"
+---
+
 <style type="text/css">
     #procon > li > ul > li {
         color: darkred;
