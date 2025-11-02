@@ -1,0 +1,44 @@
+<h1>RVRX.dev Website</h1>
+<p>Eleventy-based static site generator for my primary domain and its blog.</p>
+<p>Dependencies: NodeJS (&amp; NPM).
+After cloning, run <code>npm install</code> in root repository folder. Run <code>npm start</code> or <code>npm run build</code> to build the site.</p>
+<h2>Project Structure</h2>
+<ul>
+<li><code>docs/</code> is the directory that should be served to the web (output directory)</li>
+<li>New markdown posts should be placed into <code>staging/</code> in their own directories</li>
+<li><code>_includes/</code> contains Nunjucks templates and layouts</li>
+<li><code>.eleventy.js</code> is the Eleventy configuration file</li>
+</ul>
+<h2>Writing new blog posts</h2>
+<p>New blog post files are to be written in markdown with YAML frontmatter and placed into the <code>staging/</code> folder at the root of this repo, each in its own directory. Running <code>npm start</code> will convert these files to HTML and place them into the <code>docs/blog/</code> directory.</p>
+<p>Post files should use YAML frontmatter like this:</p>
+<pre><code class="language-yaml">---
+title: &quot;Post Title&quot;
+subtitle: &quot;Post Subtitle&quot;
+desc: &quot;Post description for SEO&quot;
+published: true
+datePosted: &quot;2024-01-01T00:00:00.000Z&quot;
+dateEdited: &quot;2024-01-01T00:00:00.000Z&quot;
+tags:
+  - tag1
+  - tag2
+color: &quot;#7A9CA2&quot;
+---
+</code></pre>
+<h2>Converting from old format</h2>
+<p>If you have posts in the old JSON frontmatter format (with <code>&lt;!--# START POST #--&gt;</code> separator), run:</p>
+<pre><code class="language-bash">node convert-posts.js
+</code></pre>
+<p>This will convert all posts in <code>staging/</code> from JSON frontmatter to YAML frontmatter format.</p>
+<h2>Building</h2>
+<ul>
+<li><code>npm start</code> or <code>npm run build</code> - Build the site to <code>docs/</code></li>
+<li><code>npm run serve</code> - Build and serve with hot reload on <code>http://localhost:8080</code></li>
+</ul>
+<h2>Dev-notes</h2>
+<p>This site uses Eleventy with markdown-it and the same markdown plugins that were previously configured. The template engine is Nunjucks (built into Eleventy).</p>
+<h3>Useful Links for Dev</h3>
+<p>https://www.11ty.dev/docs/
+https://mozilla.github.io/nunjucks/templating.html
+https://markdown-it.github.io/markdown-it/
+python3 -m http.server 8080</p>

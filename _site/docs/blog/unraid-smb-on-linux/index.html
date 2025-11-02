@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Unraid, smb, nfs, nas, linux, Cole Manning, Blog, RVRX">
+	<meta name="description" content="How to setup an Unraid SMB share to automatically mount on boot on a Linux client">
+	
+
+    
+	<title>Unraid SMB Shares on Linux | RVRX Blog</title>
+	
+
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="/post.css" rel="stylesheet">
+    <link href="/prismjs/prism.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-FMR0C9R487');
+</script>
+<body>
+
+<div id="sidebar">
+    <div id="sticky-sidebar">
+        <a href="/">
+            <h1>RVRX</h1>
+            <h2>Cole Manning</h2>
+        </a>
+    <nav>
+        <div>
+            <p><a href="/blog" class="current-page">blog</a></p>
+            <p><a href="/work.html">work</a></p>
+            <p><a href="/resume.html">resum&eacute;</a></p>
+            <p><a href="/about.html">about</a><p>
+        </div>
+    </nav>
+    </div>
+</div>
+
+<style type="text/css">
+	#post-body a, #post-metadata a {
+		color: #7A9CA2;
+	}
+
+	#sidebar a.current-page {
+		color: #7A9CA2;
+	}
+
+	#post-body a:hover, #post-metadata a:hover {
+		color: #7A9CA2AA !important;
+	}
+
+	#sidebar a.current-page:hover {
+		color: #7A9CA2AA !important;
+	}
+</style>
+<div id="main">
+    <div class="post">
+        <h1 style="background-color: #7A9CA2; transition-duration: 660ms;" data-aos="fade-right">Unraid SMB Shares on Linux</h1>
+        <div id="post-metadata">
+          
+          	<h2 class="subtitle">Permanently adding an Unraid SMB share to a Linux client</h2>
+          
+          
+	        <ul>
+	          
+	            <li><time datetime="2023-10-1">Posted: Nov 1, 2023</time></li>
+	          
+	          
+	          
+	          	<li>
+	            
+	            	<a href="../tags/guide" class="post-tag">guide</a>,
+	            
+	            	<a href="../tags/unraid" class="post-tag">unraid</a>,
+	            
+	            	<a href="../tags/linux" class="post-tag">linux</a>,
+	            
+	            	<a href="../tags/homelab" class="post-tag">homelab</a>
+	            
+	            </li>
+	          
+	        </ul>
+	  	 
+	    </div>
+        <div id="post-body">
+            <p>This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the <code>noserverino</code> fix for stale file handles that can be encountered due to the Unraid Mover's impact on the Unraid SMB server.</p>
+<h2 id="install-smb%2Fcifs" tabindex="-1"><a class="header-anchor" href="#install-smb%2Fcifs">#</a> Install SMB/CIFS</h2>
+<p>Install SMB utlitiy to allow CIFS mounting:</p>
+<pre><code class="language-">apt-get install cifs-utils
+</code></pre>
+<h2 id="creating-protected-file-with-smb-credentials" tabindex="-1"><a class="header-anchor" href="#creating-protected-file-with-smb-credentials">#</a> Creating Protected File with SMB Credentials</h2>
+<p>Create secure SMB password file:</p>
+<pre><code class="language-bash">mkdir ~/Credentials/
+cd ~/Credentials/
+echo username=my_unraid_user &gt; .smbpasswd_unraid
+echo password=my_unraid_password &gt;&gt; .smbpasswd_unraid
+chmod 600 .smbpasswd_unraid
+</code></pre>
+<h2 id="adding-entry-to-fstab-for-automatic-mounting-on-boot" tabindex="-1"><a class="header-anchor" href="#adding-entry-to-fstab-for-automatic-mounting-on-boot">#</a> Adding Entry to fstab for Automatic Mounting on Boot</h2>
+<p>To get a share to automatically mount on boot, it needs to be added to <code>/etc/fstab</code>, like in this example:</p>
+<pre><code class="language-">//10.0.1.37/myshare /mnt/ClientPath cifs _netdev,noserverino,credentials=/home/rvrx/Credentials/.smbpasswd_unraid 0 0
+</code></pre>
+<ul>
+<li><code>//10.0.1.37/myshare</code> - path to smb share</li>
+<li><code>/mnt/ClientPath</code> - local path. This is often a <code>/mnt/...</code> location. This path must be created locally first, so do a quick mkdir here if it is not.</li>
+<li><code>cifs</code> - old name for SMB</li>
+<li><code>_netdev</code> - tells mount that the filesystem is on a device that require network access. This will ensure that the system won't try to mount this share until its network services have finished setting up.</li>
+<li><code>noserverino</code> - <strong>IMPORANT FOR UNRAID</strong>: &quot;Client generates inode numbers itself rather than using the actual ones from the server.&quot; This will prevent stale file handle errors after the Unraid Mover is invoked. <em>More on this later...</em></li>
+<li><code>credentials=...</code> - path to our credentials file</li>
+<li><code>0 0</code> - <em>fs_freq</em> and <em>fs_passno</em>. Very commonly these are both 0.</li>
+</ul>
+<p>Unless you wish to reboot, run <code>mount -a</code> to mount the new fstab entries.</p>
+<p>Check the manual for <code>mount</code> and <code>mount-cifs</code> on your system, under the &quot;FILESYSTEM-INDEPENDENT MOUNT OPTIONS&quot; section for more options you might want to consider, such as explicit read and write access declarations.</p>
+<h3 id="the-noserverino-fix" tabindex="-1"><a class="header-anchor" href="#the-noserverino-fix">#</a> The <em>noserverino</em> Fix</h3>
+<p>I have found very little background information on the /why/ of this fix, but here is the issue as I understand it:</p>
+<p>When Unraid invokes its Mover, a file is moved from one disk to another. This causes a change in the “inode” number for this file. This inode holds important metadata about this file and its location, and is therefore required to access the file. When this change happens, the client remains ignorant, and on its next attempt to access this directory or file, it runs into the “stale file handle” issue. This is due to the file handle now pointing to an inode number that is, ultimately, invalid. Normally, in similar scenarios, the inode (and therefore file handle) would be refreshed, avoiding this. But in some edge-cases in CIFS (or even NFS), such as in the case of the Unraid mover, the server does not notify the client of the inode refresh. This is why the system flags it as “stale”. it is now effectively a null-pointer. The client has no idea where this file has gone.</p>
+<p>Under normal SMB operation:</p>
+<ol>
+<li>Server provides inode <em>number</em> (not actual inode information) to client.</li>
+<li>When the client wants a file/dir, it requests the inode itself via this reference.</li>
+<li>If the Unraid Mover has been invoked, causing a change in the inode number, there will not be a match</li>
+</ol>
+<p>Client-side inode via <code>noserverino</code> flag:</p>
+<ol>
+<li>Client generates its own inode and uses that to reference files.</li>
+<li>When the Mover causes a quiet inode change, the client no longer cares, it's got its own reference locally, and the change is not breaking.</li>
+</ol>
+<p><br>
+<br>
+If my understanding is off, please email me at <em>cole@[this domain]</em> and let me know!</p>
+
+        </div>
+    </div>
+</div>
+<script src="/prismjs/prism.js"></script>
+</body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</html>
