@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@11ty/eleventy": "^2.0.1",
+    "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
     "dotenv": "^16.3.1",
     "katex": "0.16.9",
     "lodash": "4.17.21",
@@ -37,8 +38,7 @@
     "markdown-it-task-lists": "2.1.1",
     "markdown-it-underline": "1.0.1",
     "mermaid": "10.6.1",
-    "plantuml": "0.0.2",
-    "prismjs": "^1.29.0",
+    "plantuml": "0.2.0",
     "twemoji": "14.0.2"
   }
 }

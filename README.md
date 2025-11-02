@@ -8,7 +8,7 @@ After cloning, run `npm install` in root repository folder. Run `npm start` or `
 - `docs/` is the directory that should be served to the web (output directory)
 - New markdown posts should be placed into `staging/` in their own directories
 - `_includes/` contains Nunjucks templates and layouts
-- `.eleventy.js` is the Eleventy configuration file
+- `.eleventy.cjs` is the Eleventy configuration file
 
 ## Writing new blog posts
 New blog post files are to be written in markdown with YAML frontmatter and placed into the `staging/` folder at the root of this repo, each in its own directory. Running `npm start` will convert these files to HTML and place them into the `docs/blog/` directory.

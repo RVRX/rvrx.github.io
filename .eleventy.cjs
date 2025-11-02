@@ -13,25 +13,33 @@ const mdFootnote = require('markdown-it-footnote');
 const mdImsize = require('markdown-it-imsize');
 const mdAnchor = require('markdown-it-anchor');
 const underline = require('markdown-it-underline');
+const syntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight');
 const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 
 module.exports = function(eleventyConfig) {
+  // Add syntax highlighting plugin
+  eleventyConfig.addPlugin(syntaxHighlight);
+
   // Configure markdown-it with all plugins
   const md = new MarkdownIt({
     html: true,
     breaks: true,
     linkify: true,
     typography: true,
+    // Only handle special cases; the syntax highlighting plugin handles regular code blocks
     highlight(str, lang) {
       if (lang === 'diagram') {
         return `<pre class="diagram">` + Buffer.from(str, 'base64').toString() + `</pre>`;
       } else if (['mermaid', 'plantuml'].includes(lang)) {
         return `<pre class="codeblock-${lang}"><code>${_.escape(str)}</code></pre>`;
-      } else {
+      }
+      // Return standard format with language class - the syntax highlighting plugin will process it
+      if (lang) {
         return `<pre><code class="language-${lang}">${_.escape(str)}</code></pre>`;
       }
+      return `<pre><code>${_.escape(str)}</code></pre>`;
     }
   })
     .use(mdAttrs, {
@@ -57,7 +65,7 @@ module.exports = function(eleventyConfig) {
   // Copy static assets from docs directory
   eleventyConfig.addPassthroughCopy('docs/img');
   eleventyConfig.addPassthroughCopy('docs/font');
-  eleventyConfig.addPassthroughCopy('docs/prismjs');
+  // Removed: prismjs passthrough (no longer needed)
   eleventyConfig.addPassthroughCopy('docs/*.css');
   eleventyConfig.addPassthroughCopy('docs/*.html');
   eleventyConfig.addPassthroughCopy('docs/*.js');
@@ -193,3 +201,4 @@ module.exports = function(eleventyConfig) {
     dataTemplateEngine: 'njk'
   };
 };
+

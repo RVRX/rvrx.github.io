@@ -20,9 +20,9 @@ layout: base.njk
 
     <link href="/sidebar.css" rel="stylesheet">
     <link href="/post.css" rel="stylesheet">
-    <link href="/prismjs/prism.css" rel="stylesheet">
+    <link href="https://unpkg.com/prismjs@1.29.0/themes/prism-okaidia.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
+    <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style>
 </head>
 {% include "gtag.njk" %}
 <body>
@@ -74,7 +74,6 @@ layout: base.njk
         </div>
     </div>
 </div>
-<script src="/prismjs/prism.js"></script>
 </body>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
