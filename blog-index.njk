@@ -1,0 +1,58 @@
+---
+pagination:
+  data: collections.posts
+  size: 1000
+permalink: /blog/index.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">
+    <meta name="description" content="Website and Dev Blog of Cole Manning">
+
+    <title>Blog | RVRX</title>
+
+    <link rel="canonical" href="https://www.rvrx.dev/blog/">
+    <link href="/listing.css" rel="stylesheet">
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>body {background-image: url("/img/background-blog-new.webp")}</style>
+
+    <!-- Prefetch Background images for other pages -->
+    <link rel="prefetch" href="/img/background-candidate-post-2-SfW-80.webp"> <!-- Post -->
+</head>
+{% include "gtag.njk" %}
+<body>
+{% include "sidebar.njk" %}
+<div id="main" style="overflow: hidden;">
+    {% for post in pagination.items %}
+        <div class="post">
+            <a href="{{ post.url }}"> {# post.url will be the permalink #}
+                {# TODO: Auto-gen colors + transition duration #}
+                {% set defaultColors = ['#7A9CA2', '#887AA2', '#86a27a', '#b5add6', '#f97d6e'] %}
+                <div class="post-container" data-aos="fade-right" 
+                style="
+                    background-color:
+                        {%- if post.data.color -%}
+                            {{ post.data.color }}
+                        {%- else -%}
+                            {{ defaultColors | random }}
+                        {%- endif -%};
+                    transition-duration:
+                        {{- post.data.title | size | times: 8.108 | plus: 378 }}ms;">
+                    <p class="post-title">{{ post.data.title }}</p>
+                    <p class="post-subtitle">{{ post.data.datePosted | shortDate }}</p>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+</body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</html>
+

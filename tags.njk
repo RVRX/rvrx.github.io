@@ -1,0 +1,38 @@
+---
+layout: base.njk
+pagination:
+  data: collections.allTags
+  size: 1
+  alias: tag
+permalink: /blog/tags/{{ tag }}/index.html
+---
+{% set taggedPosts = collections.posts | where: "data.tags", tag %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">
+    <meta name="description" content="Website and Dev Blog of Cole Manning">
+
+    <link href="/sidebar.css" rel="stylesheet">
+    <link href="/post.css" rel="stylesheet">
+	<title>{{ tag }} | RVRX Blog</title>
+</head>
+{% include "gtag.njk" %}
+<body>
+{% include "sidebar.njk" %}
+<div id="main">
+	 <div class="post">
+	 	<h1>Tagged "{{ tag }}"</h1>
+	  	<div id="post-body">
+			<ul>
+			{% for post in taggedPosts %}
+				<li><a href="{{ post.url }}">{{ post.data.title }}</a></li>
+			{% endfor %}
+			</ul>
+		</div>
+	 </div>
+</div>
+</body>
+</html>
