@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="keywords" content="{{ seo_keywords }}, Cole Manning, Blog, RVRX">{% if description %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />{% if seo_keywords %}
+    <meta name="keywords" content="{{ seo_keywords }}, Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">{% else %}
+    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">{% endif %}{% if description %}
 	<meta name="description" content="{{ description }}">
 	{% else %}
     <meta name="description" content="Website and Dev Blog of Cole Manning">
