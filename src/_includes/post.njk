@@ -1,0 +1,54 @@
+---
+layout: base.njk
+---
+
+<style type="text/css">
+	#post-body a, #post-metadata a {
+		color: {{ color }};
+	}
+
+	#sidebar a.current-page {
+		color: {{ color }};
+	}
+
+	#post-body a:hover, #post-metadata a:hover {
+		color: {{ color }}AA !important;
+	}
+
+	#sidebar a.current-page:hover {
+		color: {{ color }}AA !important;
+	}
+</style>
+<div id="main">
+    <div class="post">
+        <h1 style="background-color: {{ color }}; transition-duration: 660ms;" data-aos="fade-right">{{ title }}</h1>
+        <div id="post-metadata">
+          {% if subtitle %}
+          	<h2 class="subtitle">{{ subtitle }}</h2>
+          {% endif %}
+          {% if date or tags %}
+	        <ul>
+	          {% if date %}
+	            <li><time datetime="{{ date | date('%Y-%m-%d') }}">Posted: {{ date | date('%B %d, %Y') }}</time></li>
+	          {% endif %}
+              {% if dateEdited %}
+	          {% if dateEdited != date %}
+	          	<li><em><time datetime="{{ dateEdited | date('%Y-%m-%d') }}">Edited: {{ dateEdited | date('%B %d, %Y') }}</time></em></li>
+	          {% endif %}
+              {% endif %}
+	          {% if tags and tags.length %}
+	          	<li>
+	            {% for tag in tags %}
+	            	<a href="../tags/{{ tag }}" class="post-tag">{{ tag }}</a>{% if not loop.last %},{% endif %}
+	            {% endfor %}
+	            </li>
+	          {% endif %}
+	        </ul>
+	  	 {% endif %}
+	    </div>
+        <div id="post-body">
+            {{ content | safe }}
+        </div>
+    </div>
+</div>
+<script src="/prismjs/prism.js"></script>

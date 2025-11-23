@@ -1,0 +1,70 @@
+body {
+
+    /* Background image styling */
+    /* https://css-tricks.com/perfect-full-page-background-image/, but expanded to allow for fallback color */
+    background-color: rgb(35, 35, 35);
+    background-image: url("/img/blog-background-3.webp"); /* TODO: scale image more realistically */
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+
+/* Fonts */
+@font-face {
+    font-family: 'CenturySchoolbookBold';
+    src: url('/font/century_schoolbook_std_bold-webfont.woff2') format('woff2'),
+    url('/font/century_schoolbook_std_bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+@font-face {
+    font-family: 'CenturySchoolbookRegular';
+    src: url('/font/century_schoolbook_std_regular-webfont.woff2') format('woff2'),
+    url('/font/century_schoolbook_std_regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+.post-subtitle {
+    font-family: "CenturySchoolbookRegular", Times, serif;
+    font-size: 2rem;
+    /*text-transform: uppercase;*/
+}
+.post-title {
+    font-family: "CenturySchoolbookBold", Times, serif;
+    font-size: 2.75rem;
+    text-transform: uppercase;
+}
+
+
+
+/* display posts inline so the background stays only near text */
+.post-container {
+    display: inline-block;
+    padding-right: 0.25em;
+    padding-left: 0.15em;
+}
+
+.post {
+    padding: 1em 3vw 1em 3vw;
+}
+
+.post a {
+    color: #232323;
+}
+
+
+p.post-title {
+    margin: 0;
+}
+
+
+p.post-subtitle {
+    margin: 0.5em 0 0;
+}

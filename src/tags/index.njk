@@ -1,0 +1,23 @@
+---
+layout: base.njk
+title: Tags
+permalink: /blog/tags/index.html
+---
+
+<link href="/css/post.css" rel="stylesheet">
+<div id="main">
+	 <div class="post">
+	 	<h1>Tagged "guide"</h1>
+	  	<div id="post-body">
+			<ul>
+              {% for tagName, tagPosts in collections %}
+                {% if tagName != "all" and tagName != "posts" %}
+                  <li>
+                    <a href="/blog/tags/{{ tagName }}/">{{ tagName }}</a> ({{ tagPosts.length }} post{% if tagPosts.length != 1 %}s{% endif %})
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+		</div>
+	 </div>
+</div>

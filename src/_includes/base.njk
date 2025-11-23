@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="{{ seo_keywords }}, Cole Manning, Blog, RVRX">{% if description %}
+	<meta name="description" content="{{ description }}">
+	{% else %}
+    <meta name="description" content="Website and Dev Blog of Cole Manning">
+    {% endif %}
+
+    {% if title %}
+	<title>{{ title }} | RVRX Blog</title>
+	{% else %}
+    <title>RVRX Blog</title>
+	{% endif %}
+
+    <link href="/css/sidebar.css" rel="stylesheet">
+    {% if "/posts/" in page.filePathStem %}<link href="/css/post.css" rel="stylesheet">
+    <link href="/css/prism.css" rel="stylesheet">{% else %}<link href="/css/listing.css" rel="stylesheet">{% endif %}
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
+{% include "gtag.njk" %}
+</head>
+<body>
+{% include "sidebar.njk" %}
+{{ content | safe }}
+</body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
