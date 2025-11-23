@@ -11,21 +11,22 @@
 	<title>Unraid SMB Shares on Linux | RVRX Blog</title>
 	
 
-    <link href="/sidebar.css" rel="stylesheet">
-    <link href="/post.css" rel="stylesheet">
-    <link href="/prismjs/prism.css" rel="stylesheet">
+    <link href="/css/sidebar.css" rel="stylesheet">
+    <link href="/css/post.css" rel="stylesheet">
+    <link href="/css/prism.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
-</head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-  gtag('config', 'G-FMR0C9R487');
-</script>
+      gtag('config', 'G-FMR0C9R487');
+    </script>
+
+</head>
 <body>
 
 <div id="sidebar">
@@ -37,13 +38,15 @@
     <nav>
         <div>
             <p><a href="/blog" class="current-page">blog</a></p>
-            <p><a href="/work.html">work</a></p>
-            <p><a href="/resume.html">resum&eacute;</a></p>
-            <p><a href="/about.html">about</a><p>
+            <p><a href="/work">work</a></p>
+            <p><a href="/resume">resum&eacute;</a></p>
+            <p><a href="/about">about</a><p>
         </div>
     </nav>
     </div>
 </div>
+
+
 
 <style type="text/css">
 	#post-body a, #post-metadata a {
@@ -72,9 +75,9 @@
           
 	        <ul>
 	          
-	            <li><time datetime="2023-10-1">Posted: Nov 1, 2023</time></li>
+	            <li><time datetime="2023-11-01">Posted: November 1, 2023</time></li>
 	          
-	          
+              
 	          
 	          	<li>
 	            
@@ -93,22 +96,19 @@
 	    </div>
         <div id="post-body">
             <p>This guide will explain how to setup an Unraid SMB share to automatically mount on boot on a Linux client. It also addresses the <code>noserverino</code> fix for stale file handles that can be encountered due to the Unraid Mover's impact on the Unraid SMB server.</p>
-<h2 id="install-smb%2Fcifs" tabindex="-1"><a class="header-anchor" href="#install-smb%2Fcifs">#</a> Install SMB/CIFS</h2>
+<h2 id="install-smbcifs" tabindex="-1"><a class="heading-anchor" href="#install-smbcifs">#</a> Install SMB/CIFS</h2>
 <p>Install SMB utlitiy to allow CIFS mounting:</p>
-<pre><code class="language-">apt-get install cifs-utils
-</code></pre>
-<h2 id="creating-protected-file-with-smb-credentials" tabindex="-1"><a class="header-anchor" href="#creating-protected-file-with-smb-credentials">#</a> Creating Protected File with SMB Credentials</h2>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">apt-get</span> <span class="token function">install</span> cifs-utils</code></pre>
+<h2 id="creating-protected-file-with-smb-credentials" tabindex="-1"><a class="heading-anchor" href="#creating-protected-file-with-smb-credentials">#</a> Creating Protected File with SMB Credentials</h2>
 <p>Create secure SMB password file:</p>
-<pre><code class="language-bash">mkdir ~/Credentials/
-cd ~/Credentials/
-echo username=my_unraid_user &gt; .smbpasswd_unraid
-echo password=my_unraid_password &gt;&gt; .smbpasswd_unraid
-chmod 600 .smbpasswd_unraid
-</code></pre>
-<h2 id="adding-entry-to-fstab-for-automatic-mounting-on-boot" tabindex="-1"><a class="header-anchor" href="#adding-entry-to-fstab-for-automatic-mounting-on-boot">#</a> Adding Entry to fstab for Automatic Mounting on Boot</h2>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">mkdir</span> ~/Credentials/
+<span class="token builtin class-name">cd</span> ~/Credentials/
+<span class="token builtin class-name">echo</span> <span class="token assign-left variable">username</span><span class="token operator">=</span>my_unraid_user <span class="token operator">></span> .smbpasswd_unraid
+<span class="token builtin class-name">echo</span> <span class="token assign-left variable">password</span><span class="token operator">=</span>my_unraid_password <span class="token operator">>></span> .smbpasswd_unraid
+<span class="token function">chmod</span> <span class="token number">600</span> .smbpasswd_unraid</code></pre>
+<h2 id="adding-entry-to-fstab-for-automatic-mounting-on-boot" tabindex="-1"><a class="heading-anchor" href="#adding-entry-to-fstab-for-automatic-mounting-on-boot">#</a> Adding Entry to fstab for Automatic Mounting on Boot</h2>
 <p>To get a share to automatically mount on boot, it needs to be added to <code>/etc/fstab</code>, like in this example:</p>
-<pre><code class="language-">//10.0.1.37/myshare /mnt/ClientPath cifs _netdev,noserverino,credentials=/home/rvrx/Credentials/.smbpasswd_unraid 0 0
-</code></pre>
+<pre class="language-none" tabindex="0"><code class="language-none">//10.0.1.37/myshare /mnt/ClientPath cifs _netdev,noserverino,credentials=/home/rvrx/Credentials/.smbpasswd_unraid 0 0</code></pre>
 <ul>
 <li><code>//10.0.1.37/myshare</code> - path to smb share</li>
 <li><code>/mnt/ClientPath</code> - local path. This is often a <code>/mnt/...</code> location. This path must be created locally first, so do a quick mkdir here if it is not.</li>
@@ -120,9 +120,9 @@ chmod 600 .smbpasswd_unraid
 </ul>
 <p>Unless you wish to reboot, run <code>mount -a</code> to mount the new fstab entries.</p>
 <p>Check the manual for <code>mount</code> and <code>mount-cifs</code> on your system, under the &quot;FILESYSTEM-INDEPENDENT MOUNT OPTIONS&quot; section for more options you might want to consider, such as explicit read and write access declarations.</p>
-<h3 id="the-noserverino-fix" tabindex="-1"><a class="header-anchor" href="#the-noserverino-fix">#</a> The <em>noserverino</em> Fix</h3>
+<h3 id="the-noserverino-fix" tabindex="-1"><a class="heading-anchor" href="#the-noserverino-fix">#</a> The <em>noserverino</em> Fix</h3>
 <p>I have found very little background information on the /why/ of this fix, but here is the issue as I understand it:</p>
-<p>When Unraid invokes its Mover, a file is moved from one disk to another. This causes a change in the “inode” number for this file. This inode holds important metadata about this file and its location, and is therefore required to access the file. When this change happens, the client remains ignorant, and on its next attempt to access this directory or file, it runs into the “stale file handle” issue. This is due to the file handle now pointing to an inode number that is, ultimately, invalid. Normally, in similar scenarios, the inode (and therefore file handle) would be refreshed, avoiding this. But in some edge-cases in CIFS (or even NFS), such as in the case of the Unraid mover, the server does not notify the client of the inode refresh. This is why the system flags it as “stale”. it is now effectively a null-pointer. The client has no idea where this file has gone.</p>
+<p>When Unraid invokes its Mover, a file is moved from one disk to another. This causes a change in the &quot;inode&quot; number for this file. This inode holds important metadata about this file and its location, and is therefore required to access the file. When this change happens, the client remains ignorant, and on its next attempt to access this directory or file, it runs into the &quot;stale file handle&quot; issue. This is due to the file handle now pointing to an inode number that is, ultimately, invalid. Normally, in similar scenarios, the inode (and therefore file handle) would be refreshed, avoiding this. But in some edge-cases in CIFS (or even NFS), such as in the case of the Unraid mover, the server does not notify the client of the inode refresh. This is why the system flags it as &quot;stale&quot;. it is now effectively a null-pointer. The client has no idea where this file has gone.</p>
 <p>Under normal SMB operation:</p>
 <ol>
 <li>Server provides inode <em>number</em> (not actual inode information) to client.</li>
@@ -142,9 +142,20 @@ If my understanding is off, please email me at <em>cole@[this domain]</em> and l
     </div>
 </div>
 <script src="/prismjs/prism.js"></script>
+
 </body>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
     AOS.init();
 </script>
 </html>
+
+
+
+
+
+
+
+
+
+

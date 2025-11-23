@@ -1,0 +1,143 @@
+body {
+
+    /* Background image styling */
+    /* https://css-tricks.com/perfect-full-page-background-image/, but expanded to allow for fallback color */
+    background-color: rgba(35, 35, 35, 0.5);
+    background-image: url("/img/background-candidate-post-2-SfW-80.webp"); /* TODO: scale image more realistically */
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-blend-mode: multiply; /* darkens the background... should just be done in PS to the origional image to reduce loadtime*/
+}
+
+div#sidebar, div#main {
+    /*background-color: rgba(35, 35, 34, .75);*/
+}
+
+#main {
+    text-align: left;
+}
+
+/* Import fonts from font directory */
+@import url('/font/stylesheet.css');
+
+@font-face {
+    font-family: 'CenturySchoolbookRegular';
+    src: url('/font/century_schoolbook_std_regular-webfont.woff2') format('woff2'),
+    url('/font/century_schoolbook_std_regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+#main h1 {
+    font-family: "CenturySchoolbookRegular", Times, serif;
+    font-size: 3rem;
+    color: #232322;
+    background-color: #8CA07E;
+    display: inline-block;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: 5rem;
+}
+
+#post-body, #post-metadata {
+    color: rgb(186,186, 186);
+    font-size: 1rem;
+    font-family: Roboto, sans-serif;
+
+    background-color: rgba(20, 20, 20, 0.95);
+    margin-left: 1rem;
+    margin-right: 1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+
+    max-width: 70ch;
+    line-height: 1.75;
+
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+
+#post-body a, #post-metadata a {
+    color: #03af5f;
+}
+
+#post-body a:hover, #post-metadata a {
+    color: #027c43;
+}
+
+
+#post-metadata {
+    margin-left: 1rem;
+    /*background-color: rgba(35, 35, 34, .90);*/
+    /*color: #bababa;*/
+    /*padding-left: 1rem;*/
+    /*padding-right: 1rem;*/
+    margin-bottom: 1rem;
+}
+
+#post-metadata > h2 {
+    font-style: italic;
+    margin: 0;
+    padding: 0;
+}
+
+img {
+    max-inline-size: 100%;
+    block-size: auto;
+    height: auto;
+
+    /*filter: drop-shadow(0 10px 4px #4444dd);*/
+    filter: drop-shadow(0 10px 4px rgba(0, 0, 0, 0.5));
+}
+
+code:not(code[class^="language-"]) {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal;
+    background: #2d2d2d;
+    color: #ccc;
+    font-size: 0.8rem;
+}
+
+/* Heading anchor links */
+.heading-anchor {
+    color: rgb(186, 186, 186);
+    text-decoration: none;
+    margin-right: 0.5rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.heading-anchor:hover,
+.heading-anchor:focus {
+    opacity: 1;
+    color: #03af5f;
+}
+
+
+blockquote {
+    padding: 0.15rem 1rem 0.15rem;
+    background-color: #eceff1;
+    border-left: 5px solid #607d8b;
+/*    border-radius: .5rem;*/
+    margin: 1rem 0;
+    position: relative;
+}
+
+blockquote.is-danger {
+    background-color: rgb(63, 0, 9);
+    border-color: rgb(128, 24, 24);
+    color: rgb(229, 83, 83);
+}
+
+blockquote.is-danger code:not([class^="language-"]) {
+  background-color: rgb(53, 0, 8);
+  color: rgb(189, 46, 46);
+}

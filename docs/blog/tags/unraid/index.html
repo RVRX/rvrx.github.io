@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<html>
 <head>
-	<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="keywords" content="Cole Manning, Blog, RVRX, devblog, dev-blog, WPI, cmanning">
+    <meta name="keywords" content=", Cole Manning, Blog, RVRX">
     <meta name="description" content="Website and Dev Blog of Cole Manning">
+    
 
-    <link href="/sidebar.css" rel="stylesheet">
-    <link href="/post.css" rel="stylesheet">
-	<title>unraid | RVRX Blog</title>
+    
+    <title>RVRX Blog</title>
+	
+
+    <link href="/css/sidebar.css" rel="stylesheet">
+    <link href="/css/listing.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>code[class*="language-"]:not(pre code[class*="language-"]) {line-height: normal}</style> <!-- Override weird line-height from prisim-js -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-FMR0C9R487');
+    </script>
+
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FMR0C9R487"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-FMR0C9R487');
-</script>
 <body>
 
 <div id="sidebar">
@@ -31,23 +37,59 @@
     <nav>
         <div>
             <p><a href="/blog" class="current-page">blog</a></p>
-            <p><a href="/work.html">work</a></p>
-            <p><a href="/resume.html">resum&eacute;</a></p>
-            <p><a href="/about.html">about</a><p>
+            <p><a href="/work">work</a></p>
+            <p><a href="/resume">resum&eacute;</a></p>
+            <p><a href="/about">about</a><p>
         </div>
     </nav>
     </div>
 </div>
 
+
+
+<link href="/css/post.css" rel="stylesheet">
 <div id="main">
 	 <div class="post">
-	 	<h1>Tagged "unraid"</h1>
+        <h1>Tagged "unraid"</h1>
 	  	<div id="post-body">
-			<ul>
-			<li><a href="/blog/unraid">Starting a NAS Homelab</a></li><li><a href="/blog/unraid-smb-on-linux">Unraid SMB Shares on Linux</a></li>
-			</ul>
+            
+            
+            <ol>
+              
+                <li>
+                  <a href="/blog/unraid-smb-on-linux/">Unraid SMB Shares on Linux</a>
+                  
+                    <span class="post-meta"> - November 1, 2023</span>
+                  
+                </li>
+              
+                <li>
+                  <a href="/blog/unraid/">Starting a NAS Homelab</a>
+                  
+                    <span class="post-meta"> - October 26, 2022</span>
+                  
+                </li>
+              
+            </ol>
+            
+            <p><a href="/blog/tags/">← All Tags</a></p>
 		</div>
 	 </div>
 </div>
+
 </body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 </html>
+
+
+
+
+
+
+
+
+
+
