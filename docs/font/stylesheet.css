@@ -3,22 +3,17 @@
 
 
 @font-face {
-    font-family: 'century_schoolbook_stdbold';
+    font-family: 'CenturySchoolbookBold';
     src: url('century_schoolbook_std_bold-webfont.woff2') format('woff2'),
          url('century_schoolbook_std_bold-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
-
-
-
 @font-face {
-    font-family: 'century_schoolbook_stdregular';
+    font-family: 'CenturySchoolbookRegular';
     src: url('century_schoolbook_std_regular-webfont.woff2') format('woff2'),
          url('century_schoolbook_std_regular-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
