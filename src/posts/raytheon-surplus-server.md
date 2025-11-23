@@ -1,6 +1,6 @@
 ---
 title: Aerospace Grade... Compute?
-description: Carbon Fiber Raytheon Surpluss
+description: Carbon Fiber Raytheon Surplus
 tags:
   - homelab
   - server
