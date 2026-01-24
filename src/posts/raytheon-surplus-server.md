@@ -4,7 +4,7 @@ description: Carbon Fiber Raytheon Surplus
 tags:
   - homelab
   - server
-date: 2025-11-23T17:00:00-05:00
+date: 2025-12-02T17:00:00-05:00
 color: "#797979"
 layout: post.njk
 ---
