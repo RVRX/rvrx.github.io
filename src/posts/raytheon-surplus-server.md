@@ -17,7 +17,7 @@ Don’t quite remember how I stumbled upon it, but in late August I found myself
 ![][image1]  
 Now beyond the immediate “that's a thing??,” of seeing a *carbon fiber* server, a couple things caught my eye:
 
-(1) a starting price of only $100 with 0 bids six days into a weeklong action, and
+(1) a starting price of only $100 with 0 bids six days into a weeklong auction, and
 
 (2) it was likely worth more than $100 \- even with the dubious “for parts” eBay categorization. 
 
@@ -30,12 +30,12 @@ Looking at the description, I noticed that this was only marked as 'for parts' b
 While “untested” and its close neighbor “for parts” often actually means “nothing works, but I don’t want to tell you that.” I trusted that this seller actually just didn't have the very unique DC power input nor the know-how or gear required to open up the case and connect an ATX PSU to the motherboard. I messaged the seller aiming to figure out the chances of the hardware actually being in working order.  
 
 ![][image2]  
-Well. Now I knew it was Raytheon/RTX surplus, and he had multiple units \- despite only listing one. I figured the chances that Raytheon is auctioning off dead server's instead of scrapping them quite low...
+Well. Now I knew it was Raytheon/RTX surplus, and he had multiple units \- despite only listing one. I figured the chances that Raytheon is auctioning off dead servers instead of scrapping them quite low...
 
 
 ### Purchasing
 
-With my curiosity piqued enough, I put in my max bid of $125, and a day later I was the proud owner of… nothing. Someone outbid me in the last few seconds of the auction. Well, I went back to my DMs to the seller…. and **ended up walking away with *two* servers, for $110 each**. I did this ~~due to an obsession with I hoarding weird technology~~ in hopes that I could resell one for double the money and keep the other \- effectively getting one unit for free.
+With my curiosity piqued enough, I put in my max bid of $125, and a day later I was the proud owner of… nothing. Someone outbid me in the last few seconds of the auction. Well, I went back to my DMs to the seller…. and **ended up walking away with *two* servers, for $110 each**. I did this ~~due to an obsession with hoarding weird technology~~ in hopes that I could resell one for double the money and keep the other \- effectively getting one unit for free.
 
 ---
 
@@ -51,8 +51,7 @@ The servers came with some RMA paperwork \- looks like they were both sent back 
 
 ### Exterior
 
-* The IO shield goes pretty hard. Its not the SuperMicro OEM one, but rather Its CNC’d just for this motherboard’s IO layout from a solid block.  
-TODO: PHOTO
+* The IO shield goes pretty hard. It's not the SuperMicro OEM one, but rather it's CNC’d just for this motherboard’s IO layout from a solid block.  
 * Fat ground connection  
 
 ![](/img/raytheon-s-l1600-10.png)
@@ -66,7 +65,7 @@ TODO: PHOTO
 
 ## Opening the server up
 
-Apparently tool-less screws or latching mechanisms are too heavy so Crystal instead opted for *seventy* screws that need to be taken out in order to open up the server. In fairness to the designers of this sleek chassis, *only 17* to get access to the pci-e lanes to service the cards, with the rest of the motherboard hiding behind the other 53\.  
+Apparently tool-less screws or latching mechanisms are too heavy so Crystal instead opted for *seventy* screws that need to be taken out in order to open up the server. In fairness to the designers of this sleek chassis, *only 17* to get access to the PCIe lanes to service the cards, with the rest of the motherboard hiding behind the other 53\.  
 
 ![](/img/raytheon-s-l1600-2.png)
 
@@ -82,15 +81,15 @@ Apparently tool-less screws or latching mechanisms are too heavy so Crystal inst
 Crystal certainly wasn’t lying about the ruggedized nature of this build. 
 
 * The fans are nice SanAce models with sturdy **aluminum frames**, which I’ve never seen before.  
-* Unused PCI lanes have dust covers
+* Unused PCIe lanes have dust covers
 * Certain connections are hot-glued in place
 * Plenty of ground wires
 * All eight sticks of RAM have stabilizers, holding them in place -- perfectly equidistant from each other![][image4]  
-* Goop. Yup. a lot of goop. Zoom in on some of the photos above and you'll see:
+* Goop. Yup. A lot of goop. Zoom in on some of the photos above and you'll see:
   * Some grey goop around capacitors
   * Some clear goop around some traces and smaller chips (see base of the CPU heatsinks)
   * Hot glue on certain connections (see drive backplane)
-  * And most interestingly, some oily goop goop *in* the PCI-e lanes. Discovered this one when pulling out the RAM.
+  * And most interestingly, some oily goop *in* the PCIe lanes. Discovered this one when pulling out the RAM.
 
 The grey and clear goop makes some sense to me \- the server might be getting jostled around, and Crystal wanted to prevent any components on the PCBs from rattling their way off. Assuming the grey material handles higher temps better. I can't quite figure out, however, why the slots (expansion/PCI \+ RAM) have goop in them? In fact I think the RAM itself was a fair bit oily \- not just at the contacts.  
 
@@ -99,24 +98,23 @@ They also put their own stickers on the Samsung DIMMs
 ![][image5]
 
 Looks like when estimating the potential cost of the server pre-purchase, I had not considered the RAM. 256GB of ECC DDR4 per server 🤑🤑. Glued together via spacers atop the sticks, and covered in an oily goop \- but DDR4 nonetheless.  
-**XXX more stuff about the physical internals**
 
 ### Discovering a Spec Drawings Doc \+ The OG Auction
 
-In other ‘why was this made available’ findings, I ended up tracking down a PDF published **by the auction house that the original buyer of this lot of servers source them from** that begins with a preface about it being “Export Controlled under EAR” and disclaimers on every page from Crystal Group saying “RECIPIENT AGREES NOT TO DISCLOSE OR REPRODUCE ALL OR PART OF THIS DRAWING”. <!-- The doc was a TODO TODO whatever you call ME measurement diagram, printed CAD thingy TODO TODO.--> Crystal appears to still manufacture this model, so I don't quite understand why RTX thought it was appropriate to provide the mechanical drawings to the auction-house. How did I stumble upon this? Well, I punched into Google Search what I thought was a model number for one of the PCI-e cards \- thinking it was a generic OEM model identifier \- but looks like the card was actually re-labeled with Crystal PNs. **And this document was indexed in Google. [Here's the hotlink to it for those curious if it is still up](https://www.hgpauction.com/wp-content/uploads/2024/10/2482572-CMS-00507.pdf).**
+In other ‘why was this made available’ findings, I ended up tracking down a PDF published **by the auction house that the original buyer of this lot of servers sourced them from** that begins with a preface about it being “Export Controlled under EAR” and disclaimers on every page from Crystal Group saying “RECIPIENT AGREES NOT TO DISCLOSE OR REPRODUCE ALL OR PART OF THIS DRAWING”. <!-- The doc was a TODO TODO whatever you call ME measurement diagram, printed CAD thingy TODO TODO.--> Crystal appears to still manufacture this model, so I don't quite understand why RTX thought it was appropriate to provide the mechanical drawings to the auction-house. How did I stumble upon this? Well, I punched into Google Search what I thought was a model number for one of the PCIe cards \- thinking it was a generic OEM model identifier \- but looks like the card was actually re-labeled with Crystal PNs. **And this document was indexed in Google. [Here's the hotlink to it for those curious if it is still up](https://www.hgpauction.com/wp-content/uploads/2024/10/2482572-CMS-00507.pdf).**
 
 #### Finding the Auction Site
 
 Poked around the website hosting the PDF for a while, till I was able to trace down the original listing\! The auction, titled “Raytheon: Surplus SATCOM Communications & Field Equipment” had a staggering 779 lots. That's 779 different listings, with things like Flight-Sims, racks of equipment inside portable shelters, some insane aeronautical surveillance cameras, and tons of other communications equipment I wouldn’t know how to describe. Check it out live [here](https://bid.hgpauction.com/past-auctions/herita10278?page=1&pageSize=60) or archived [here](https://archive.is/c4Azm).  
 ![][image6]  
- **My servers** appear to have come from lot 502 ([live](https://bid.hgpauction.com/past-auctions/herita10278/lot-details/24b1bb99-a031-4fd6-a41a-b24100208477), [archive](https://archive.is/m8WFK)) \- which sold for an unpublished amount on Feb 06, 2025\. The lot description doesn't include any links to the previously mentioned, so I’m not quite sure where that was published.  
+ **My servers** appear to have come from lot 502 ([live](https://bid.hgpauction.com/past-auctions/herita10278/lot-details/24b1bb99-a031-4fd6-a41a-b24100208477), [archive](https://archive.is/m8WFK)) \- which sold for an unpublished amount on Feb 06, 2025\. The lot description doesn't include any links to the previously mentioned document, so I’m not quite sure where that was published.  
 ![][image7]  
 
 ## Booting the Server
 
 ### Getting it Powered
 
-I looked around my apartment but unfortunately I did not have a [CB6P20-22SS-A34 (MIL-DTL-5015)](https://www.milnec.com/mil-5015-connectors/mil-c-5015-connectors-catalog.pdf) connector nor 28VDC service to power the unit, so I pulled out the funky PSU in the server and swapped in my own. Of course, half of the connectors had to be glued on, so it took me longer than I thought, but we got there. I didn’t have the right gear to get all the fans hooked up (they were wired straight into the PSU instead of going through the MODO headers for some reason), but a couple Noctuas on top did the job well enough.  
+I looked around my apartment but unfortunately I did not have a [CB6P20-22SS-A34 (MIL-DTL-5015)](https://www.milnec.com/mil-5015-connectors/mil-c-5015-connectors-catalog.pdf) connector nor 28VDC service to power the unit, so I pulled out the funky PSU in the server and swapped in my own. Of course, half of the connectors had to be glued on, so it took me longer than I thought, but we got there. I didn’t have the right gear to get all the fans hooked up (they were wired straight into the PSU instead of going through the MOBO headers for some reason), but a couple Noctuas on top did the job well enough.  
 ![][image9]
 
 ### Getting into the IPMI
@@ -138,15 +136,15 @@ Went to the local Microcenter and it turns out VGA to HDMI adapters aren’t a h
 
 #### Back to the IPMI
 
-	Plugged in a USB semi-virtually (my PiKVM is plugged into the server’s USB and can mount arbitrary files), and used the BIOS to trigger a boot to it. Curiously I wasn’t getting any video output. I decided to fall back to the IPMI KVM, but that came with some problems. I’ve worked with a couple of SuperMicro’s before, both brand new enterprise gear and older stuff from ebay, and I’ve never actually run into one that *doesn’t* have the modern HTML KVM as an option. Falling back to the Java JNLP applet was much more of a pain then it needed to be. I had to:
+	Plugged in a USB semi-virtually (my PiKVM is plugged into the server’s USB and can mount arbitrary files), and used the BIOS to trigger a boot to it. Curiously I wasn’t getting any video output. I decided to fall back to the IPMI KVM, but that came with some problems. I’ve worked with a couple of SuperMicros before, both brand new enterprise gear and older stuff from ebay, and I’ve never actually run into one that *doesn’t* have the modern HTML KVM as an option. Falling back to the Java JNLP applet was much more of a pain than it needed to be. I had to:
 
-* Download an older version of Java (JDK 8u151). Oracle makes this a pain, and all the old repo’s I used to use seemed to be dead.  
+* Download an older version of Java (JDK 8u151). Oracle makes this a pain, and all the old repos I used to use seemed to be dead.  
 * Even after disabling every security feature I still had to roll my computer’s clock back to 2015 to get past some disabled features and expired certificates.
 
 (For whatever reason I did all this research in a private window and didn’t document it, so I no longer recall what the exact error message was)  
 	
 
-Once I got into the IPMI’s KVM I saw it was the RAID card that was holding up the boot. Not sure why this didn’t make its way to the VGA output. On that note I know almost nothing about how cards like these place themselves into the boot process to present configuration screen like this.
+Once I got into the IPMI’s KVM I saw it was the RAID card that was holding up the boot. Not sure why this didn’t make its way to the VGA output. On that note I know almost nothing about how cards like these place themselves into the boot process to present a configuration screen like this.
 
 ![][image13]  
 Press any key to continue…
@@ -175,7 +173,7 @@ Boot into Ubuntu and check out all those cores 😁.
 
 ## Conclusion
 
-Made my money back selling RAM alone; sold off all the RAM from one unit, and half from the other (I think I’ll be fine with just 128GB). Sold off the rest of the components for the server all at once. Probably could have made more money selling each piece individually \- esp, the motherboard \- but I figured I would take the easy route. So, all in all, a pretty fun weekend project, that I was able to walk away from a few hundred dollars richer and with a free carbon fiber server (-128GB of RAM) that can sit in a rack in my cluttered room and look sick (i.e., collect dust).
+Made my money back selling RAM alone; sold off all the RAM from one unit, and half from the other (I think I’ll be fine with just 128GB). Sold off the rest of the components for the server all at once. Probably could have made more money selling each piece individually \- especially, the motherboard \- but I figured I would take the easy route. So, all in all, a pretty fun weekend project, that I was able to walk away from a few hundred dollars richer and with a free carbon fiber server (-128GB of RAM) that can sit in a rack in my cluttered room and look sick (i.e., collect dust).
 
 [image1]: /img/raytheon-image1.webp
 
