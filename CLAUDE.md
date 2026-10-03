@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
+nvm use            # Node version from .nvmrc (24 LTS)
 npm install        # Install dependencies
 npm run dev        # Development server with auto-reload at http://localhost:8080
 npm run serve      # Same as dev
@@ -20,7 +21,7 @@ The site is hosted on **GitHub Pages** at **https://rvrx.dev** (also reachable a
 - **DNS**: `rvrx.dev` has A records → GitHub Pages IPs (185.199.108-111.153); `www.rvrx.dev` has a CNAME → `rvrx.github.io`
 - **HTTPS**: enforced; cert covers both `rvrx.dev` and `www.rvrx.dev`
 
-To publish changes: build the site (`npm run build`), commit the updated `docs/` directory, and push to `master`. GitHub's built-in `pages-build-deployment` workflow deploys automatically.
+`master` is live: anything pushed there deploys. Make changes on a feature branch, build the site (`npm run build`), commit the updated `docs/` alongside the source change, and open a PR into `master`. Never commit or push to `master` directly. GitHub's built-in `pages-build-deployment` workflow deploys on merge.
 
 ## Architecture
 
@@ -36,7 +37,12 @@ Templates use Nunjucks (`.njk`) with inheritance:
 
 - `src/_includes/base.njk` — outer HTML shell (head, nav, CSS links)
 - `src/_includes/post.njk` — blog post wrapper (title, date, tags); sets `layout: base.njk`
-- `src/_includes/sidebar.njk` — sidebar component included in base
+- `src/_includes/sidebar.njk` — sidebar, included by base and by the standalone pages. A page's `nav` front matter (`blog`, `work`, `resume`, `about`, `none`) picks the highlighted link; it defaults to `blog`. The logo is not a heading, so each page needs its own `<h1>` (visually hidden on blog/work/resume)
+- `src/_includes/seo.njk` — `<title>`, meta description, canonical, Open Graph and JSON-LD for every page. Reads `title`, `fullTitle`, `description` and `noindex` from front matter, and site-wide values from `src/_data/site.json`
+
+`about.html`, `work.html`, `resume.html`, `404.html` and `index.html` (the homepage) are standalone pages with their own `<head>`; each includes `seo.njk` and, except the homepage, `sidebar.njk`.
+
+Generated files: `sitemap.njk` → `/sitemap.xml` (indexable pages, minus tag listings), `robots.njk` → `/robots.txt`, and `redirects.njk`, which writes meta-refresh + canonical stubs for old `.html` URLs (GitHub Pages can't send real 301s). Add an entry there whenever a URL moves.
 
 Blog posts set `layout: post.njk`, which chains to `base.njk` automatically.
 
@@ -59,6 +65,7 @@ The `posts` collection is auto-built from `src/posts/*.md` via `eleventyConfig.a
 
 ### Key Config Details (`eleventy.config.js`)
 
+- **`isoDate` / `absoluteUrl` filters**: ISO 8601 timestamps and `site.url`-based absolute URLs, for metadata and the sitemap.
 - **Date filter**: Parses dates timezone-safely (string extraction avoids UTC offset issues). Supports `%Y-%m-%d` and `%B %d, %Y` format strings.
 - **Markdown**: `markdown-it` with `markdown-it-anchor` (auto heading anchors with `#` permalink) and `markdown-it-attrs` (custom attributes in markdown).
 - **Syntax highlighting**: `@11ty/eleventy-plugin-syntaxhighlight` — use fenced code blocks with language identifier.
