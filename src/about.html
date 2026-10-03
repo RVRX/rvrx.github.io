@@ -1,4 +1,5 @@
 ---
+nav: about
 permalink: /about/
 ---
 <!DOCTYPE html>
@@ -26,22 +27,7 @@ permalink: /about/
   gtag('config', 'G-FMR0C9R487');
 </script>
 <body>
-<div id="sidebar">
-    <div id="sticky-sidebar">
-        <a href="/">
-            <h1>RVRX</h1>
-            <h2>Cole Manning</h2>
-        </a>
-        <nav>
-            <div>
-                <p><a href="/blog">blog</a></p>
-                <p><a href="/work">work</a></p>
-                <p><a href="/resume">resum&eacute;</a></p>
-                <p><a href="/about" class="current-page">about</a><p>
-            </div>
-        </nav>
-    </div>
-</div>
+{% include "sidebar.njk" %}
 <div id="main">
     <div class="post">
         <h1 style="background-color: #4AAEF8;">About</h1>

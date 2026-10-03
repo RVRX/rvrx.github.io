@@ -1,18 +1,19 @@
-{# {% block sidebar %} #}
+{# The logo is not a heading: each page's own <h1> carries its title. #}
+{# Highlights the link named by the page's `nav` front matter; defaults to blog. #}
+{% set current = nav | default("blog") %}
 <div id="sidebar">
     <div id="sticky-sidebar">
         <a href="/">
-            <h1>RVRX</h1>
-            <h2>Cole Manning</h2>
+            <p class="site-name">RVRX</p>
+            <p class="site-owner">Cole Manning</p>
         </a>
     <nav>
         <div>
-            <p><a href="/blog" class="current-page">blog</a></p>
-            <p><a href="/work">work</a></p>
-            <p><a href="/resume">resum&eacute;</a></p>
-            <p><a href="/about">about</a><p>
+            <p><a href="/blog/"{% if current == "blog" %} class="current-page"{% endif %}>blog</a></p>
+            <p><a href="/work/"{% if current == "work" %} class="current-page"{% endif %}>work</a></p>
+            <p><a href="/resume/"{% if current == "resume" %} class="current-page"{% endif %}>resum&eacute;</a></p>
+            <p><a href="/about/"{% if current == "about" %} class="current-page"{% endif %}>about</a></p>
         </div>
     </nav>
     </div>
 </div>
-{# {% endblock %} #}
