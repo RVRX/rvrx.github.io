@@ -5,6 +5,7 @@ permalink: /blog/
 ---
 <style>body {background-image: url("/img/background-blog-new.webp")}</style>
 <div id="main" style="overflow: hidden;">
+<h1 class="visually-hidden">Blog</h1>
 {% for post in collections.posts | reverse %}
         <div class="post">
             <a href="{{ post.url }}"> 

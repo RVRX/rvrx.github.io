@@ -1,4 +1,5 @@
 ---
+nav: resume
 permalink: /resume/
 ---
 <!DOCTYPE html>
@@ -24,23 +25,9 @@ permalink: /resume/
   gtag('config', 'G-FMR0C9R487');
 </script>
 <body>
-<div id="sidebar">
-    <div id="sticky-sidebar">
-        <a href="/">
-            <h1>RVRX</h1>
-            <h2>Cole Manning</h2>
-        </a>
-        <nav>
-            <div>
-                <p><a href="/blog">blog</a></p>
-                <p><a href="/work" >work</a></p>
-                <p><a href="/resume" class="current-page">resum&eacute;</a></p>
-                <p><a href="/about">about</a><p>
-            </div>
-        </nav>
-    </div>
-</div>
+{% include "sidebar.njk" %}
 <div id="main">
+    <h1 class="visually-hidden">R&eacute;sum&eacute;</h1>
     <div class="post" style="text-align: center">
         <object data="/resume.pdf" width="90%" height="800px" type="application/pdf">
         <p>It appears your browser doesn't have PDF capabilities.

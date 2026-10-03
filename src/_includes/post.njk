@@ -39,7 +39,7 @@ layout: base.njk
 	          {% if tags and tags.length %}
 	          	<li>
 	            {% for tag in tags %}
-	            	<a href="../tags/{{ tag }}" class="post-tag">{{ tag }}</a>{% if not loop.last %},{% endif %}
+	            	<a href="/blog/tags/{{ tag }}/" class="post-tag">{{ tag }}</a>{% if not loop.last %},{% endif %}
 	            {% endfor %}
 	            </li>
 	          {% endif %}
