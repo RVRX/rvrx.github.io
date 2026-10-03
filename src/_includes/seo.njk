@@ -1,0 +1,61 @@
+{#- Per-page <title>, description, canonical, Open Graph and JSON-LD.
+    Front matter it reads: title, fullTitle (overrides the suffixed title),
+    description, noindex. Posts are detected by their input path. -#}
+{%- set pageTitle = fullTitle or ((title + " | " + site.titleSuffix) if title else site.titleSuffix) -%}
+{%- set pageDescription = description or site.description -%}
+{%- set pageUrl = page.url | absoluteUrl -%}
+{%- set isPost = "/posts/" in page.inputPath -%}
+    <title>{{ pageTitle }}</title>
+    <meta name="description" content="{{ pageDescription }}">
+{%- if noindex %}
+    <meta name="robots" content="noindex">
+{%- else %}
+    <link rel="canonical" href="{{ pageUrl }}">
+{%- endif %}
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:type" content="{{ 'article' if isPost else 'website' }}">
+    <meta property="og:title" content="{{ title or pageTitle }}">
+    <meta property="og:description" content="{{ pageDescription }}">
+    <meta property="og:url" content="{{ pageUrl }}">
+    <meta property="og:image" content="{{ site.image | absoluteUrl }}">
+    <meta name="twitter:card" content="summary">
+{%- if isPost %}
+    <meta property="article:published_time" content="{{ page.date | isoDate }}">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": {{ title | dump | safe }},
+      "description": {{ pageDescription | dump | safe }},
+      "datePublished": "{{ page.date | isoDate }}",
+      "dateModified": "{{ (dateEdited or page.date) | isoDate }}",
+      "url": "{{ pageUrl }}",
+      "mainEntityOfPage": "{{ pageUrl }}",
+      "image": "{{ site.image | absoluteUrl }}",
+      "author": { "@type": "Person", "name": {{ site.author | dump | safe }}, "url": "{{ '/' | absoluteUrl }}" }
+    }
+    </script>
+{%- elif page.url == "/" %}
+    <script type="application/ld+json">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": {{ site.name | dump | safe }},
+        "url": "{{ '/' | absoluteUrl }}",
+        "author": { "@id": "{{ '/' | absoluteUrl }}#person" }
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "@id": "{{ '/' | absoluteUrl }}#person",
+        "name": {{ site.author | dump | safe }},
+        "alternateName": {{ site.name | dump | safe }},
+        "url": "{{ '/' | absoluteUrl }}",
+        "jobTitle": "Infrastructure Engineer",
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "Worcester Polytechnic Institute" },
+        "sameAs": {{ site.sameAs | dump | safe }}
+      }
+    ]
+    </script>
+{%- endif %}

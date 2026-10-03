@@ -4,6 +4,12 @@ pagination:
   data: collections
   size: 1
   alias: tag
+  filter:
+    - all
+    - posts
+eleventyComputed:
+  title: 'Posts tagged “{{ tag }}”'
+  description: 'Posts by Cole Manning (RVRX) tagged “{{ tag }}”.'
 permalink: /blog/tags/{{ tag }}/
 ---
 
