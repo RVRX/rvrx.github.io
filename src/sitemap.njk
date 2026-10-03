@@ -1,0 +1,17 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for item in collections.all | sort(false, false, "url") %}
+{%- if item.url and not item.data.noindex and not item.url.startsWith("/blog/tags/") %}
+  <url>
+    <loc>{{ item.url | absoluteUrl }}</loc>
+    {%- if "/posts/" in item.inputPath %}
+    <lastmod>{{ (item.data.dateEdited or item.date) | isoDate }}</lastmod>
+    {%- endif %}
+  </url>
+{%- endif %}
+{%- endfor %}
+</urlset>
