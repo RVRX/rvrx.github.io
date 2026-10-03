@@ -1,0 +1,30 @@
+---
+# Old .html URLs from before the move to directory URLs. GitHub Pages
+# can't send real 301s; an instant meta refresh plus a canonical is
+# treated by Google as a permanent redirect.
+pagination:
+  data: redirects
+  size: 1
+  alias: redirect
+redirects:
+  - { from: /about.html, to: /about/ }
+  - { from: /blog.html, to: /blog/ }
+  - { from: /resume.html, to: /resume/ }
+  - { from: /work.html, to: /work/ }
+permalink: "{{ redirect.from }}"
+eleventyExcludeFromCollections: true
+---
+{%- set target = redirect.to | absoluteUrl -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moved to {{ target }}</title>
+    <link rel="canonical" href="{{ target }}">
+    <meta http-equiv="refresh" content="0; url={{ target }}">
+    <script>location.replace({{ target | dump | safe }} + location.search + location.hash);</script>
+</head>
+<body>
+    <p>This page has moved to <a href="{{ target }}">{{ target }}</a>.</p>
+</body>
+</html>
