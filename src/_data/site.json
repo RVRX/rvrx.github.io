@@ -1,0 +1,12 @@
+{
+  "url": "https://www.rvrx.dev",
+  "name": "RVRX",
+  "author": "Cole Manning",
+  "titleSuffix": "Cole Manning (RVRX)",
+  "description": "Cole Manning (RVRX): infrastructure engineer in Massachusetts. Homelab write-ups, Linux and networking guides, projects and résumé.",
+  "image": "/android-chrome-512x512.png",
+  "sameAs": [
+    "https://github.com/RVRX",
+    "https://www.linkedin.com/in/colemanning/"
+  ]
+}

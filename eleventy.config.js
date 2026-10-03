@@ -2,6 +2,7 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const markdownIt = require("markdown-it");
 const markdownItAnchor = require("markdown-it-anchor");
 const markdownItAttrs = require("markdown-it-attrs");
+const site = require("./src/_data/site.json");
 
 module.exports = function(eleventyConfig) {
   // Configure markdown-it with anchor plugin
@@ -67,6 +68,16 @@ module.exports = function(eleventyConfig) {
     }
     
     return d.toLocaleDateString();
+  });
+
+  // Full date-time for machine-readable metadata (JSON-LD, sitemap)
+  eleventyConfig.addFilter("isoDate", function(date) {
+    return new Date(date).toISOString();
+  });
+
+  // Site-relative path -> absolute URL on site.url (canonical, OG, sitemap)
+  eleventyConfig.addFilter("absoluteUrl", function(path) {
+    return new URL(path, site.url).href;
   });
 
   // Create a collection for posts
